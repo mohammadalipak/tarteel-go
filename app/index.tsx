@@ -1,42 +1,37 @@
-import { useState } from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import AudioPlayer from "@/components/AudioPlayer";
 import Header from "@/components/Header";
 import Mushaf from "@/components/Mushaf";
-import RepeatSettings from "@/components/RepeatSettings";
+import RepetitionSettings from "@/components/RepetitionSettings";
+import { useAppStore } from "@/store/useAppStore";
+import { AudioPlayerProvider } from "@/contexts/AudioPlayerContext";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const [showRepeatSettings, setShowRepeatSettings] = useState(false);
-
-  const toggleRepeatSettings = () => {
-    setShowRepeatSettings(!showRepeatSettings);
-  };
+  const { showRepetitionSettings } = useAppStore();
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/green-bg.jpg")}
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <View style={styles.container}>
-        <Header
-          style={[styles.header, { marginTop: insets.top }]}
-          onToggleRepeatSettings={toggleRepeatSettings}
-          showRepeatSettings={showRepeatSettings}
-        ></Header>
-        {showRepeatSettings ? (
-          <RepeatSettings style={styles.content}></RepeatSettings>
-        ) : (
-          <Mushaf style={styles.content}></Mushaf>
-        )}
-        <AudioPlayer
-          style={[styles.footer, { paddingBottom: insets.bottom }]}
-        ></AudioPlayer>
-      </View>
-    </ImageBackground>
+    <AudioPlayerProvider>
+      <ImageBackground
+        source={require("@/assets/images/green-bg.jpg")}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.container}>
+          <Header style={[styles.header, { marginTop: insets.top }]}></Header>
+          {showRepetitionSettings ? (
+            <RepetitionSettings style={styles.content}></RepetitionSettings>
+          ) : (
+            <Mushaf style={styles.content}></Mushaf>
+          )}
+          <AudioPlayer
+            style={[styles.footer, { paddingBottom: insets.bottom }]}
+          ></AudioPlayer>
+        </View>
+      </ImageBackground>
+    </AudioPlayerProvider>
   );
 }
 

@@ -11,18 +11,14 @@ import {
 } from "react-native";
 
 import RepeatIcon from "@/assets/images/repeat-icon.svg";
+import { useAppStore } from "@/store/useAppStore";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
-  onToggleRepeatSettings?: () => void;
-  showRepeatSettings?: boolean;
 };
 
-const Header: React.FC<ChildProps> = ({
-  style,
-  onToggleRepeatSettings,
-  showRepeatSettings,
-}) => {
+const Header: React.FC<ChildProps> = ({ style }) => {
+  const { showRepetitionSettings, toggleRepetitionSettings } = useAppStore();
   const onSurahPressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
@@ -31,10 +27,7 @@ const Header: React.FC<ChildProps> = ({
 
   const onRepeatPressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    if (onToggleRepeatSettings) {
-      onToggleRepeatSettings();
-    }
+    toggleRepetitionSettings();
   };
 
   return (
@@ -53,17 +46,17 @@ const Header: React.FC<ChildProps> = ({
             style={[
               styles.repeatButtonContainer,
               {
-                backgroundColor: showRepeatSettings
+                backgroundColor: showRepetitionSettings
                   ? "rgba(255, 255, 255, 0.5)"
                   : "transparent",
               },
             ]}
           >
             <RepeatIcon
-              fill={showRepeatSettings ? "#088581" : "#fff"}
+              fill={showRepetitionSettings ? "#088581" : "#fff"}
               style={[
                 styles.repeatButton,
-                { opacity: showRepeatSettings ? 1 : 0.7 },
+                { opacity: showRepetitionSettings ? 1 : 0.7 },
               ]}
             />
           </View>

@@ -10,20 +10,35 @@ import {
 } from "react-native";
 
 import CarIcon from "@/assets/images/car-icon.svg";
-// import PauseIcon from "@/assets/images/pause-icon.svg";
+import PauseIcon from "@/assets/images/pause-icon.svg";
 import PlayIcon from "@/assets/images/play-icon.svg";
 import SkipBackwardIcon from "@/assets/images/skip-backward-icon.svg";
 import SkipForwardIcon from "@/assets/images/skip-forward-icon.svg";
+import { useAppStore } from "@/store/useAppStore";
+import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
 };
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
+  const { isAudioPlaying, setIsAudioPlaying } = useAppStore();
+  const { player } = useAudioPlayerContext();
+
   const onCarModePressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     Alert.alert("TODO: Switch to car mode");
+  };
+
+  const onPlayPausePressed = () => {
+    if (isAudioPlaying) {
+      setIsAudioPlaying(false);
+      player.pause();
+    } else {
+      setIsAudioPlaying(true);
+      player.play();
+    }
   };
 
   return (
@@ -37,7 +52,9 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
         <SkipBackwardIcon />
       </View>
       <View style={styles.middle}>
-        <PlayIcon />
+        <TouchableOpacity onPress={onPlayPausePressed}>
+          {isAudioPlaying ? <PauseIcon /> : <PlayIcon />}
+        </TouchableOpacity>
       </View>
       <View style={styles.rightMiddle}>
         <SkipForwardIcon />
