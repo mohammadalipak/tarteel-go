@@ -11,6 +11,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { findCurrentWord } from "@/utils/audioWordMapping";
 
 interface AudioSeekbarProps {
   style?: StyleProp<ViewStyle>;
@@ -20,14 +21,31 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
   const { player, currentTime, duration } = useAudioPlayerContext();
   const [sliderValue, setSliderValue] = useState(0);
   const isSliding = useRef(false);
+  const lastVerseRef = useRef<number | null>(null);
 
   const handleSlidingStart = () => {
     isSliding.current = true;
+    // Initialize with current verse when sliding starts
+    const currentWord = findCurrentWord(currentTime);
+    lastVerseRef.current = currentWord?.ayah || null;
   };
 
   const handleValueChange = async (value: number) => {
     if (isSliding.current) {
       setSliderValue(value);
+
+      // Find the current word at this position
+      const currentWord = findCurrentWord(value);
+      const currentVerse = currentWord?.ayah;
+
+      // Check if verse has changed and provide haptic feedback
+      if (currentVerse && lastVerseRef.current && currentVerse !== lastVerseRef.current) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        lastVerseRef.current = currentVerse;
+      } else if (currentVerse && !lastVerseRef.current) {
+        // First time finding a verse
+        lastVerseRef.current = currentVerse;
+      }
 
       if (player && player.seekTo) {
         await player.seekTo(value);
@@ -38,6 +56,8 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
   const handleSlidingComplete = async (value: number) => {
     isSliding.current = false;
     setSliderValue(0);
+    // Reset verse tracking when sliding completes
+    lastVerseRef.current = null;
   };
 
   const onQariPressed = () => {
