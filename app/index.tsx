@@ -1,12 +1,19 @@
+import { useState } from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import AudioPlayer from "@/components/AudioPlayer";
 import Header from "@/components/Header";
 import Mushaf from "@/components/Mushaf";
+import RepeatSettings from "@/components/RepeatSettings";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
+  const [showRepeatSettings, setShowRepeatSettings] = useState(false);
+
+  const toggleRepeatSettings = () => {
+    setShowRepeatSettings(!showRepeatSettings);
+  };
 
   return (
     <ImageBackground
@@ -15,8 +22,16 @@ export default function Index() {
       resizeMode="cover"
     >
       <View style={styles.container}>
-        <Header style={[styles.header, { marginTop: insets.top }]}></Header>
-        <Mushaf style={styles.content}></Mushaf>
+        <Header
+          style={[styles.header, { marginTop: insets.top }]}
+          onToggleRepeatSettings={toggleRepeatSettings}
+          showRepeatSettings={showRepeatSettings}
+        ></Header>
+        {showRepeatSettings ? (
+          <RepeatSettings style={styles.content}></RepeatSettings>
+        ) : (
+          <Mushaf style={styles.content}></Mushaf>
+        )}
         <AudioPlayer
           style={[styles.footer, { paddingBottom: insets.bottom }]}
         ></AudioPlayer>
@@ -38,8 +53,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
   footer: {
     height: 180,

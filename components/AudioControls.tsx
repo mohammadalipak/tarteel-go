@@ -1,4 +1,13 @@
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import * as Haptics from "expo-haptics";
+import {
+  Alert,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
 import CarIcon from "@/assets/images/car-icon.svg";
 // import PauseIcon from "@/assets/images/pause-icon.svg";
@@ -11,10 +20,18 @@ type ChildProps = {
 };
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
+  const onCarModePressed = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    Alert.alert("TODO: Switch to car mode");
+  };
+
   return (
     <View style={[style, styles.container]}>
       <View style={styles.left}>
-        <CarIcon style={styles.carIcon} />
+        <TouchableOpacity onPress={onCarModePressed}>
+          <CarIcon style={styles.carIcon} />
+        </TouchableOpacity>
       </View>
       <View style={styles.leftMiddle}>
         <SkipBackwardIcon />
