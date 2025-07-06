@@ -3,13 +3,14 @@ import {
   FlatList,
   StyleProp,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
 
 import Words from "@/assets/data/text_quran.json";
+import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
+import { createWordKey } from "@/utils/audioWordMapping";
 import { getAyahs } from "../helpers";
 import BoldableWord from "./BoldableWord";
 
@@ -18,35 +19,37 @@ type ChildProps = {
 };
 
 const Mushaf: React.FC<ChildProps> = ({ style }) => {
+  const { currentWordKey, currentWord } = useAudioPlayerContext();
+
   const renderWord = (
     word: string,
     wordIndex: number,
-    startingAyahKey: string
+    surah: number,
+    ayah: number
   ) => {
-    // const isCurrentAyah = currentAyah === startingAyahKey;
-    // const isHighlighted = isCurrentAyah && highlightedWord === wordIndex;
-    // const isPlayed =
-    //   isCurrentAyah && wordIndex < highlightedWord && highlightedWord > -1;
-    // const isNextWord = isCurrentAyah && highlightedWord === wordIndex - 1;
+    // Create word key for this specific word (wordIndex is 0-based, but audio data is 1-based)
+    const wordKey = createWordKey(surah, ayah, wordIndex + 1);
+    const isCurrentWord = currentWordKey === wordKey;
 
-    // // Check if word ends with semantic stop character
-    // const endsWithSemanticStop = SEMANTIC_STOPS.some((stop) =>
-    //   word.endsWith(stop)
-    // );
+    // Check if this word should be highlighted (in current verse and before/at current word)
+    const shouldHighlight =
+      currentWord &&
+      currentWord.surah === surah &&
+      currentWord.ayah === ayah &&
+      wordIndex + 1 <= currentWord.wordIndex;
 
     return (
-      <Fragment key={`word-fragment-${startingAyahKey}-${wordIndex}`}>
-        <Text
+      <Fragment key={`word-fragment-${surah}-${ayah}-${wordIndex}`}>
+        <BoldableWord
+          // bold={shouldHighlight || false}
+          bold
           style={[
             styles.word,
-            // isHighlighted && styles.highlightedWord,
-            // isPlayed && styles.playedWord,
-            // isNextWord && styles.nextWord,
+            shouldHighlight && styles.highlightedWord,
+            isCurrentWord && styles.currentWord,
           ]}
-        >
-          <BoldableWord bold style={styles.word} text={word}></BoldableWord>
-        </Text>
-        {/* {endsWithSemanticStop && <Text style={styles.lineBreak}>{"\n"}</Text>} */}
+          text={word}
+        ></BoldableWord>
       </Fragment>
     );
   };
@@ -57,12 +60,11 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
         contentContainerStyle={{ paddingRight: 30 }}
         data={getAyahs(Words)}
         renderItem={({ item }) => {
-          const startingAyahKey = `${item.surah}-${item.ayah}`;
           return (
             <TouchableOpacity>
               <View style={styles.ayahContainer}>
                 {item.words.map((word: string, index: number) =>
-                  renderWord(word, index, startingAyahKey)
+                  renderWord(word, index, item.surah, item.ayah)
                 )}
               </View>
             </TouchableOpacity>
@@ -84,11 +86,20 @@ const styles = StyleSheet.create({
   },
   container: { flexDirection: "row", paddingLeft: 30 },
   word: {
-    color: "rgba(255,255,255,1)",
+    color: "rgba(255,255,255,0.1)",
     fontSize: 30,
     fontFamily: "UthmanicHafs",
     marginLeft: 2,
     writingDirection: "rtl",
+  },
+  highlightedWord: {
+    color: "rgba(255,255,255,0.7)",
+  },
+  currentWord: {
+    color: "#ffffff",
+    textShadowColor: "rgba(200,200,200,.7)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
 });
 
