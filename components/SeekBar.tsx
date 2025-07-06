@@ -1,13 +1,23 @@
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
-import { useAppStore } from "@/store/useAppStore";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
 import React, { useRef, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
-export default function AudioSeekbar({ style }) {
-  const { audioDuration, currentAudioTime } = useAppStore();
-  const { player } = useAudioPlayerContext();
+interface AudioSeekbarProps {
+  style?: StyleProp<ViewStyle>;
+}
+
+export default function AudioSeekbar({ style }: AudioSeekbarProps) {
+  const { player, currentTime, duration } = useAudioPlayerContext();
   const [sliderValue, setSliderValue] = useState(0);
   const isSliding = useRef(false);
 
@@ -43,14 +53,14 @@ export default function AudioSeekbar({ style }) {
           {
             transform: [
               {
-                scaleY: isSliding.current ? 2 : 1,
+                scaleY: isSliding.current ? 3 : 1.5,
               },
             ],
           },
         ]}
         minimumValue={0}
-        maximumValue={audioDuration}
-        value={isSliding.current ? sliderValue : currentAudioTime}
+        maximumValue={duration}
+        value={isSliding.current ? sliderValue : currentTime}
         onSlidingStart={handleSlidingStart}
         onValueChange={handleValueChange}
         onSlidingComplete={handleSlidingComplete}
@@ -61,14 +71,14 @@ export default function AudioSeekbar({ style }) {
       />
       <View style={styles.footer}>
         <Text style={styles.leftLabel}>
-          {formatTime(isSliding.current ? sliderValue : currentAudioTime)}
+          {formatTime(isSliding.current ? sliderValue : currentTime)}
         </Text>
         <TouchableOpacity onPress={onQariPressed} style={styles.middleLabel}>
           <Text style={styles.qari}>AbdurRahman AsSudais</Text>
         </TouchableOpacity>
         <Text style={styles.rightLabel}>
           {`-${formatTime(
-            audioDuration - (isSliding.current ? sliderValue : currentAudioTime)
+            duration - (isSliding.current ? sliderValue : currentTime)
           )}`}
         </Text>
       </View>
@@ -86,7 +96,7 @@ const styles = StyleSheet.create({
   container: {},
   footer: {
     flexDirection: "row",
-    marginTop: 5,
+    marginTop: 10,
   },
   slider: {
     height: 10,

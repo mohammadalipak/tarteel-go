@@ -22,8 +22,7 @@ type ChildProps = {
 };
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
-  const { isAudioPlaying, setIsAudioPlaying } = useAppStore();
-  const { player } = useAudioPlayerContext();
+  const { player, isPlaying } = useAudioPlayerContext();
 
   const onCarModePressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -32,11 +31,9 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
   };
 
   const onPlayPausePressed = () => {
-    if (isAudioPlaying) {
-      setIsAudioPlaying(false);
+    if (isPlaying) {
       player.pause();
     } else {
-      setIsAudioPlaying(true);
       player.play();
     }
   };
@@ -53,7 +50,7 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
       </View>
       <View style={styles.middle}>
         <TouchableOpacity onPress={onPlayPausePressed}>
-          {isAudioPlaying ? <PauseIcon /> : <PlayIcon />}
+          {isPlaying ? <PauseIcon /> : <PlayIcon />}
         </TouchableOpacity>
       </View>
       <View style={styles.rightMiddle}>
