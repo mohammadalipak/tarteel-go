@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import {
   FlatList,
   StyleProp,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
+  TextStyle,
+  Dimensions,
 } from "react-native";
 
 import Words from "@/assets/data/text_quran.json";
@@ -20,6 +22,41 @@ type ChildProps = {
 
 const Mushaf: React.FC<ChildProps> = ({ style }) => {
   const { currentWordKey, currentWord } = useAudioPlayerContext();
+  const flatListRef = useRef<FlatList>(null);
+  const ayahRefs = useRef<{ [key: string]: View | null }>({});
+  const screenHeight = Dimensions.get('window').height;
+  const scrollToPosition = screenHeight * (1/3); // Top 1/3 of screen
+
+  // Get all ayahs data for reference
+  const ayahsData = getAyahs(Words);
+
+  // Auto-scroll when current word changes
+  useEffect(() => {
+    if (currentWord && flatListRef.current) {
+      const ayahIndex = ayahsData.findIndex(ayah => 
+        ayah.surah === currentWord.surah && ayah.ayah === currentWord.ayah
+      );
+      
+      if (ayahIndex !== -1) {
+        try {
+          // Scroll to the ayah containing the current word with offset for top 2/3
+          flatListRef.current.scrollToIndex({
+            index: ayahIndex,
+            viewPosition: 0.33, // Position at top 1/3 of screen
+            animated: true,
+          });
+        } catch (error) {
+          // Fallback to scrollToOffset if scrollToIndex fails
+          console.warn('ScrollToIndex failed, using scrollToOffset:', error);
+          const estimatedOffset = ayahIndex * 100; // Rough estimate
+          flatListRef.current.scrollToOffset({
+            offset: estimatedOffset,
+            animated: true,
+          });
+        }
+      }
+    }
+  }, [currentWord, ayahsData]);
 
   const renderWord = (
     word: string,
@@ -57,8 +94,22 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
   return (
     <View style={[styles.container, style]}>
       <FlatList
+        ref={flatListRef}
         contentContainerStyle={{ paddingRight: 30 }}
-        data={getAyahs(Words)}
+        data={ayahsData}
+        keyExtractor={(item) => `${item.surah}-${item.ayah}`}
+        onScrollToIndexFailed={(info) => {
+          // Handle failed scroll attempts
+          console.warn('Scroll to index failed:', info);
+          const wait = new Promise(resolve => setTimeout(resolve, 500));
+          wait.then(() => {
+            flatListRef.current?.scrollToIndex({ 
+              index: info.index, 
+              animated: true,
+              viewPosition: 0.33
+            });
+          });
+        }}
         renderItem={({ item }) => {
           return (
             <TouchableOpacity>
@@ -83,24 +134,27 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     flexWrap: "wrap",
     justifyContent: "flex-start",
-  },
-  container: { flexDirection: "row", paddingLeft: 30 },
+  } as ViewStyle,
+  container: { 
+    flexDirection: "row", 
+    paddingLeft: 30 
+  } as ViewStyle,
   word: {
     color: "rgba(255,255,255,0.1)",
     fontSize: 30,
     fontFamily: "UthmanicHafs",
     marginLeft: 2,
     writingDirection: "rtl",
-  },
+  } as TextStyle,
   highlightedWord: {
     color: "rgba(255,255,255,0.7)",
-  },
+  } as TextStyle,
   currentWord: {
     color: "#ffffff",
     textShadowColor: "rgba(200,200,200,.7)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
-  },
+  } as TextStyle,
 });
 
 export default Mushaf;

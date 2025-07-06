@@ -1,9 +1,9 @@
 import React from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, Text, TextStyle, View } from "react-native";
 
 type ChildProps = {
   bold: boolean;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<TextStyle>;
   text: string;
 };
 
