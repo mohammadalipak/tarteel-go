@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useRef } from "react";
 import {
-  Dimensions,
   FlatList,
   StyleProp,
   StyleSheet,
@@ -23,9 +22,6 @@ type ChildProps = {
 const Mushaf: React.FC<ChildProps> = ({ style }) => {
   const { currentWordKey, currentWord } = useAudioPlayerContext();
   const flatListRef = useRef<FlatList>(null);
-  const ayahRefs = useRef<{ [key: string]: View | null }>({});
-  const screenHeight = Dimensions.get("window").height;
-  const scrollToPosition = screenHeight * (1 / 3); // Top 1/3 of screen
 
   // Get all ayahs data for reference
   const ayahsData = getAyahs(Words);

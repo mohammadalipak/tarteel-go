@@ -25,16 +25,17 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
     isSliding.current = true;
   };
 
-  const handleValueChange = (value: number) => {
+  const handleValueChange = async (value: number) => {
     if (isSliding.current) {
       setSliderValue(value);
+
+      if (player && player.seekTo) {
+        await player.seekTo(value);
+      }
     }
   };
 
   const handleSlidingComplete = async (value: number) => {
-    if (player && player.seekTo) {
-      await player.seekTo(value);
-    }
     isSliding.current = false;
     setSliderValue(0);
   };

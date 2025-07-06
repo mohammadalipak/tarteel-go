@@ -63,17 +63,17 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.leftMiddle}>
-        <TouchableOpacity onPress={onSkipBackwardPressed}>
+        <TouchableOpacity onPress={onSkipBackwardPressed} style={styles.button}>
           <SkipBackwardIcon />
         </TouchableOpacity>
       </View>
       <View style={styles.middle}>
-        <TouchableOpacity onPress={onPlayPausePressed}>
+        <TouchableOpacity onPress={onPlayPausePressed} style={styles.button}>
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
         </TouchableOpacity>
       </View>
       <View style={styles.rightMiddle}>
-        <TouchableOpacity onPress={onSkipForwardPressed}>
+        <TouchableOpacity onPress={onSkipForwardPressed} style={styles.button}>
           <SkipForwardIcon />
         </TouchableOpacity>
       </View>
@@ -85,6 +85,9 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    padding: 20,
+  },
   carIcon: {
     opacity: 0.5,
   },

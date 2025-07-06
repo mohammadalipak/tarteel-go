@@ -5,8 +5,8 @@ import AudioPlayer from "@/components/AudioPlayer";
 import Header from "@/components/Header";
 import Mushaf from "@/components/Mushaf";
 import RepetitionSettings from "@/components/RepetitionSettings";
-import { useAppStore } from "@/store/useAppStore";
 import { AudioPlayerProvider } from "@/contexts/AudioPlayerContext";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    marginVertical: 20,
   },
   footer: {
     height: 180,

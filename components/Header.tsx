@@ -1,4 +1,5 @@
 import * as Haptics from "expo-haptics";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -11,6 +12,7 @@ import {
 } from "react-native";
 
 import RepeatIcon from "@/assets/images/repeat-icon.svg";
+import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 import { useAppStore } from "@/store/useAppStore";
 
 type ChildProps = {
@@ -19,9 +21,18 @@ type ChildProps = {
 
 const Header: React.FC<ChildProps> = ({ style }) => {
   const { showRepetitionSettings, toggleRepetitionSettings } = useAppStore();
+  const { currentWord } = useAudioPlayerContext();
+  const [displayedVerse, setDisplayedVerse] = useState(1);
+
+  // Update displayed verse only when we have a valid current word
+  useEffect(() => {
+    if (currentWord?.ayah) {
+      setDisplayedVerse(currentWord.ayah);
+    }
+  }, [currentWord?.ayah]);
+
   const onSurahPressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
     Alert.alert("TODO: Open surah navigation");
   };
 
@@ -34,7 +45,7 @@ const Header: React.FC<ChildProps> = ({ style }) => {
     <View style={[styles.header, style]}>
       <View style={styles.leftContainer}>
         <TouchableOpacity onPress={onSurahPressed}>
-          <Text style={styles.title}>Al-Muzzammil - 3</Text>
+          <Text style={styles.title}>Al-Muzzammil : {displayedVerse}</Text>
         </TouchableOpacity>
         <Text style={styles.subtitle}>
           Repeating verse 3x, Looping section forever
