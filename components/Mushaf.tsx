@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useRef } from "react";
 import {
   FlatList,
   StyleProp,
@@ -19,41 +19,82 @@ type ChildProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+const SCROLL_THROTTLE_MS = 150;
+
 const Mushaf: React.FC<ChildProps> = ({ style }) => {
   const { currentWordKey, currentWord } = useAudioPlayerContext();
   const flatListRef = useRef<FlatList>(null);
+  const lastScrollTimeRef = useRef<number>(0);
+  const pendingScrollRef = useRef<typeof currentWord>(null);
 
   // Get all ayahs data for reference
   const ayahsData = getAyahs(Words);
 
-  // Auto-scroll when current word changes
-  useEffect(() => {
-    if (currentWord && flatListRef.current) {
-      const ayahIndex = ayahsData.findIndex(
-        (ayah) =>
-          ayah.surah === currentWord.surah && ayah.ayah === currentWord.ayah
-      );
+  // Scroll execution function
+  const executeScroll = useCallback(
+    (word: typeof currentWord) => {
+      if (word && flatListRef.current) {
+        const ayahIndex = ayahsData.findIndex(
+          (ayah) => ayah.surah === word.surah && ayah.ayah === word.ayah
+        );
 
-      if (ayahIndex !== -1) {
-        try {
-          // Scroll to the ayah containing the current word with offset for top 2/3
-          flatListRef.current.scrollToIndex({
-            index: ayahIndex,
-            viewPosition: 0.33, // Position at top 1/3 of screen
-            animated: true,
-          });
-        } catch (error) {
-          // Fallback to scrollToOffset if scrollToIndex fails
-          console.warn("ScrollToIndex failed, using scrollToOffset:", error);
-          const estimatedOffset = ayahIndex * 100; // Rough estimate
-          flatListRef.current.scrollToOffset({
-            offset: estimatedOffset,
-            animated: true,
-          });
+        if (ayahIndex !== -1) {
+          try {
+            // Scroll to the ayah containing the current word with offset for top 2/3
+            flatListRef.current.scrollToIndex({
+              index: ayahIndex,
+              viewPosition: 0.33, // Position at top 1/3 of screen
+              animated: true,
+            });
+          } catch (error) {
+            // Fallback to scrollToOffset if scrollToIndex fails
+            console.warn("ScrollToIndex failed, using scrollToOffset:", error);
+            const estimatedOffset = ayahIndex * 100; // Rough estimate
+            flatListRef.current.scrollToOffset({
+              offset: estimatedOffset,
+              animated: true,
+            });
+          }
         }
       }
-    }
-  }, [currentWord, ayahsData]);
+    },
+    [ayahsData]
+  );
+
+  // Throttled scroll function
+  const throttledScrollToWord = useCallback(
+    (word: typeof currentWord) => {
+      const now = Date.now();
+      const timeSinceLastScroll = now - lastScrollTimeRef.current;
+      const throttleDelay = SCROLL_THROTTLE_MS;
+
+      if (timeSinceLastScroll >= throttleDelay) {
+        // Execute immediately if enough time has passed
+        executeScroll(word);
+        lastScrollTimeRef.current = now;
+        pendingScrollRef.current = null;
+      } else {
+        // Store the pending scroll and schedule it
+        pendingScrollRef.current = word;
+        setTimeout(() => {
+          if (
+            pendingScrollRef.current &&
+            Date.now() - lastScrollTimeRef.current >= throttleDelay
+          ) {
+            executeScroll(pendingScrollRef.current);
+            lastScrollTimeRef.current = Date.now();
+            pendingScrollRef.current = null;
+          }
+        }, throttleDelay - timeSinceLastScroll);
+      }
+    },
+    [executeScroll]
+  );
+
+  // Auto-scroll when current word changes (throttled)
+  useEffect(() => {
+    throttledScrollToWord(currentWord);
+  }, [currentWord, throttledScrollToWord]);
 
   const renderWord = (
     word: string,
