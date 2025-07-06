@@ -14,19 +14,18 @@ import PauseIcon from "@/assets/images/pause-icon.svg";
 import PlayIcon from "@/assets/images/play-icon.svg";
 import SkipBackwardIcon from "@/assets/images/skip-backward-icon.svg";
 import SkipForwardIcon from "@/assets/images/skip-forward-icon.svg";
-import { useAppStore } from "@/store/useAppStore";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
+import { findNextVerse, findPreviousVerse } from "@/utils/audioWordMapping";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
 };
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
-  const { player, isPlaying } = useAudioPlayerContext();
+  const { player, isPlaying, currentTime } = useAudioPlayerContext();
 
   const onCarModePressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
     Alert.alert("TODO: Switch to car mode");
   };
 
@@ -38,6 +37,24 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
     }
   };
 
+  const onSkipForwardPressed = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    const nextVerseTime = findNextVerse(currentTime);
+    if (nextVerseTime !== null && player.seekTo) {
+      player.seekTo(nextVerseTime);
+    }
+  };
+
+  const onSkipBackwardPressed = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    const previousVerseTime = findPreviousVerse(currentTime);
+    if (previousVerseTime !== null && player.seekTo) {
+      player.seekTo(previousVerseTime);
+    }
+  };
+
   return (
     <View style={[style, styles.container]}>
       <View style={styles.left}>
@@ -46,7 +63,9 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.leftMiddle}>
-        <SkipBackwardIcon />
+        <TouchableOpacity onPress={onSkipBackwardPressed}>
+          <SkipBackwardIcon />
+        </TouchableOpacity>
       </View>
       <View style={styles.middle}>
         <TouchableOpacity onPress={onPlayPausePressed}>
@@ -54,7 +73,9 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.rightMiddle}>
-        <SkipForwardIcon />
+        <TouchableOpacity onPress={onSkipForwardPressed}>
+          <SkipForwardIcon />
+        </TouchableOpacity>
       </View>
       <View style={styles.right}>
         <Text style={styles.speedButton}>1.5x</Text>

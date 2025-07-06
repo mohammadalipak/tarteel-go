@@ -1,13 +1,13 @@
 import { Fragment, useEffect, useRef } from "react";
 import {
+  Dimensions,
   FlatList,
   StyleProp,
   StyleSheet,
+  TextStyle,
   TouchableOpacity,
   View,
   ViewStyle,
-  TextStyle,
-  Dimensions,
 } from "react-native";
 
 import Words from "@/assets/data/text_quran.json";
@@ -24,8 +24,8 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
   const { currentWordKey, currentWord } = useAudioPlayerContext();
   const flatListRef = useRef<FlatList>(null);
   const ayahRefs = useRef<{ [key: string]: View | null }>({});
-  const screenHeight = Dimensions.get('window').height;
-  const scrollToPosition = screenHeight * (1/3); // Top 1/3 of screen
+  const screenHeight = Dimensions.get("window").height;
+  const scrollToPosition = screenHeight * (1 / 3); // Top 1/3 of screen
 
   // Get all ayahs data for reference
   const ayahsData = getAyahs(Words);
@@ -33,10 +33,11 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
   // Auto-scroll when current word changes
   useEffect(() => {
     if (currentWord && flatListRef.current) {
-      const ayahIndex = ayahsData.findIndex(ayah => 
-        ayah.surah === currentWord.surah && ayah.ayah === currentWord.ayah
+      const ayahIndex = ayahsData.findIndex(
+        (ayah) =>
+          ayah.surah === currentWord.surah && ayah.ayah === currentWord.ayah
       );
-      
+
       if (ayahIndex !== -1) {
         try {
           // Scroll to the ayah containing the current word with offset for top 2/3
@@ -47,7 +48,7 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
           });
         } catch (error) {
           // Fallback to scrollToOffset if scrollToIndex fails
-          console.warn('ScrollToIndex failed, using scrollToOffset:', error);
+          console.warn("ScrollToIndex failed, using scrollToOffset:", error);
           const estimatedOffset = ayahIndex * 100; // Rough estimate
           flatListRef.current.scrollToOffset({
             offset: estimatedOffset,
@@ -100,13 +101,13 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
         keyExtractor={(item) => `${item.surah}-${item.ayah}`}
         onScrollToIndexFailed={(info) => {
           // Handle failed scroll attempts
-          console.warn('Scroll to index failed:', info);
-          const wait = new Promise(resolve => setTimeout(resolve, 500));
+          console.warn("Scroll to index failed:", info);
+          const wait = new Promise((resolve) => setTimeout(resolve, 500));
           wait.then(() => {
-            flatListRef.current?.scrollToIndex({ 
-              index: info.index, 
+            flatListRef.current?.scrollToIndex({
+              index: info.index,
               animated: true,
-              viewPosition: 0.33
+              viewPosition: 0.33,
             });
           });
         }}
@@ -135,9 +136,9 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "flex-start",
   } as ViewStyle,
-  container: { 
-    flexDirection: "row", 
-    paddingLeft: 30 
+  container: {
+    flexDirection: "row",
+    paddingLeft: 30,
   } as ViewStyle,
   word: {
     color: "rgba(255,255,255,0.1)",
