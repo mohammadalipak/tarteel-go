@@ -6,7 +6,7 @@ import { StyleSheet, Text, View } from "react-native";
 const AUDIO_URL =
   "https://download.quranicaudio.com/qdc/abdurrahmaan_as_sudais/murattal/73.mp3";
 
-export default function AudioSeekbar() {
+export default function AudioSeekbar({ style }) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
@@ -55,7 +55,7 @@ export default function AudioSeekbar() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[style, styles.container]}>
       <Slider
         style={styles.slider}
         minimumValue={0}
@@ -67,9 +67,11 @@ export default function AudioSeekbar() {
         maximumTrackTintColor="#ffffff40"
         thumbTintColor="transparent"
       />
-      <Text style={styles.time}>
-        {formatTime(position)} / {formatTime(duration)}
-      </Text>
+      <View style={styles.footer}>
+        <Text style={styles.leftLabel}>{formatTime(position)}</Text>
+        <Text style={styles.middleLabel}>AbdurRahman AsSudais</Text>
+        <Text style={styles.rightLabel}>{formatTime(duration)}</Text>
+      </View>
     </View>
   );
 }
@@ -82,16 +84,29 @@ function formatTime(ms: number) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    width: "100%",
+  container: {},
+  footer: {
+    flexDirection: "row",
+    marginTop: 5,
   },
   slider: {
-    height: 7,
+    height: 10,
   },
-  time: {
+  leftLabel: {
+    color: "rgba(255, 255, 255, 0.5)",
+    fontFamily: "SFProRoundedBold",
+    minWidth: 50,
+    textAlign: "left",
+  },
+  rightLabel: {
+    color: "rgba(255, 255, 255, 0.5)",
+    fontFamily: "SFProRoundedBold",
+    minWidth: 50,
+    textAlign: "right",
+  },
+  middleLabel: {
+    color: "rgba(255, 255, 255, 0.5)",
+    flex: 1,
     textAlign: "center",
-    marginTop: 8,
-    fontSize: 14,
   },
 });

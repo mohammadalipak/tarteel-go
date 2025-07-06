@@ -9,6 +9,9 @@ import {
   View,
 } from "react-native";
 
+const AUDIO_URL =
+  "https://download.quranicaudio.com/qdc/abdurrahmaan_as_sudais/murattal/73.mp3";
+
 export default function CustomSeekbar() {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [duration, setDuration] = useState(1); // avoid div-by-zero
@@ -21,7 +24,7 @@ export default function CustomSeekbar() {
     (async () => {
       const { sound } = await Audio.Sound.createAsync(
         {
-          uri: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+          uri: AUDIO_URL,
         },
         { shouldPlay: true },
         onPlaybackStatusUpdate

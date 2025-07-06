@@ -12,7 +12,7 @@ export default function Index() {
     <ImageBackground
       source={require("@/assets/images/green-bg.jpg")}
       style={styles.background}
-      resizeMode="cover" // or "contain", "stretch", etc.
+      resizeMode="cover"
     >
       <View style={styles.container}>
         <Header style={[styles.header, { marginTop: insets.top }]}></Header>
@@ -31,11 +31,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingLeft: 30,
-    paddingRight: 30,
     paddingTop: 30,
   },
-  header: {},
+  header: {
+    paddingHorizontal: 30,
+  },
   content: {
     flex: 1,
     justifyContent: "center",
@@ -45,5 +45,6 @@ const styles = StyleSheet.create({
     height: 180,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 30,
   },
 });

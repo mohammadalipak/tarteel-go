@@ -52,8 +52,9 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
   };
 
   return (
-    <View style={[styles.mushaf, style]}>
+    <View style={[styles.container, style]}>
       <FlatList
+        contentContainerStyle={{ paddingRight: 30 }}
         data={getAyahs(Words)}
         renderItem={({ item }) => {
           const startingAyahKey = `${item.surah}-${item.ayah}`;
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "flex-start",
   },
-  mushaf: { flexDirection: "row" },
+  container: { flexDirection: "row", paddingLeft: 30 },
   word: {
     color: "rgba(255,255,255,1)",
     fontSize: 30,

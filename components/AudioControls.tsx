@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
 import CarIcon from "@/assets/images/car-icon.svg";
 // import PauseIcon from "@/assets/images/pause-icon.svg";
@@ -12,28 +12,51 @@ type ChildProps = {
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
   return (
-    <View style={styles.container}>
-      <CarIcon style={styles.left}></CarIcon>
-      <SkipBackwardIcon style={styles.leftMiddle}></SkipBackwardIcon>
-      <PlayIcon style={styles.middle}></PlayIcon>
-      <SkipForwardIcon style={styles.rightMiddle}></SkipForwardIcon>
-      <View style={styles.right}></View>
+    <View style={[style, styles.container]}>
+      <View style={styles.left}>
+        <CarIcon style={styles.carIcon} />
+      </View>
+      <View style={styles.leftMiddle}>
+        <SkipBackwardIcon />
+      </View>
+      <View style={styles.middle}>
+        <PlayIcon />
+      </View>
+      <View style={styles.rightMiddle}>
+        <SkipForwardIcon />
+      </View>
+      <View style={styles.right}>
+        <Text style={styles.speedButton}>1.5x</Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  carIcon: {
+    opacity: 0.5,
+  },
   container: {
-    flex: 1,
+    alignItems: "center",
     flexDirection: "row",
-    backgroundColor: "blue",
   },
-  left: {
-    flex: 1,
-  },
+  left: {},
   leftMiddle: {
+    alignItems: "center",
     flex: 1,
-    backgroundColor: "red",
+  },
+  middle: {
+    alignItems: "center",
+    flex: 1,
+  },
+  rightMiddle: {
+    alignItems: "center",
+    flex: 1,
+  },
+  right: {},
+  speedButton: {
+    color: "rgba(255, 255, 255, 0.5)",
+    fontFamily: "SFProRoundedBold",
   },
 });
 

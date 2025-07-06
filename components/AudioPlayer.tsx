@@ -23,14 +23,16 @@ const AudioPlayer: React.FC<ChildProps> = ({ style }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "yellow",
-  },
   audioControls: {
     flex: 1,
+    marginTop: 20,
+  },
+  container: {
+    marginBottom: 50,
   },
   seekBar: {
     flex: 1,
+    width: "100%",
   },
 });
 

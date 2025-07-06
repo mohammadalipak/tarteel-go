@@ -17,7 +17,8 @@ export default function RootLayout() {
     Makkah: require("../assets/fonts/Makkah-Bold.ttf"),
     May: require("../assets/fonts/May-Bold.ttf"),
     QuranKareem: require("../assets/fonts/Al-QuranAlKareem-Bold.ttf"),
-    UthmanicHafs: require("@/assets/fonts/UthmanicHafs1Ver18.ttf"),
+    SFProRoundedBold: require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
+    UthmanicHafs: require("../assets/fonts/UthmanicHafs1Ver18.ttf"),
     Zar: require("../assets/fonts/Zar-Bold.ttf"),
   });
 
@@ -30,7 +31,6 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="light" />
     </ThemeProvider>
