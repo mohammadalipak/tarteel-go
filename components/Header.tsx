@@ -20,7 +20,12 @@ type ChildProps = {
 };
 
 const Header: React.FC<ChildProps> = ({ style }) => {
-  const { showRepetitionSettings, toggleRepetitionSettings } = useAppStore();
+  const {
+    sectionRepetition,
+    showRepetitionSettings,
+    toggleRepetitionSettings,
+    verseRepetition,
+  } = useAppStore();
   const { currentWord } = useAudioPlayerContext();
   const [displayedVerse, setDisplayedVerse] = useState(1);
 
@@ -41,15 +46,33 @@ const Header: React.FC<ChildProps> = ({ style }) => {
     toggleRepetitionSettings();
   };
 
+  const getRepetitionMessage = () => {
+    let message = "";
+
+    if (verseRepetition > 1) {
+      message += verseRepetition <= 15 ? `${verseRepetition}x` : "Loop";
+      message += " each verse";
+    }
+
+    if (sectionRepetition > 1) {
+      if (message !== "") {
+        message += " · ";
+      }
+
+      message += sectionRepetition <= 15 ? `${sectionRepetition}x` : "Loop";
+      message += " entire section";
+    }
+
+    return message || "Continuous Play";
+  };
+
   return (
     <View style={[styles.header, style]}>
       <View style={styles.leftContainer}>
         <TouchableOpacity onPress={onSurahPressed}>
           <Text style={styles.title}>Al-Muzzammil : {displayedVerse}</Text>
         </TouchableOpacity>
-        <Text style={styles.subtitle}>
-          Repeating verse 3x, Looping section forever
-        </Text>
+        <Text style={styles.subtitle}>{getRepetitionMessage()}</Text>
       </View>
       <View style={styles.rightContainer}>
         <Pressable onPress={onRepeatPressed}>

@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "rgba(255,255,255,0.5)",
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: 600,
   },
   sectionSelector: {
@@ -182,11 +182,11 @@ const styles = StyleSheet.create({
   },
   settingsHeader: {
     flexDirection: "row",
-    marginBottom: 30,
+    marginBottom: 15,
   },
   settingsValue: {
     color: "#fff",
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: 600,
     marginLeft: 10,
   },
