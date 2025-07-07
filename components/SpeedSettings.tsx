@@ -28,6 +28,13 @@ const SpeedSettings: React.FC<ChildProps> = ({ style }) => {
 
   return (
     <View style={[styles.container, style]}>
+      <TouchableOpacity
+        onPress={onButtonPressed}
+        style={styles.buttonContainer}
+      >
+        <Text style={styles.button}>{`${playbackSpeed}x`}</Text>
+      </TouchableOpacity>
+
       <SettingsSlider
         minValue={0.5}
         maxValue={2.0}
@@ -37,12 +44,6 @@ const SpeedSettings: React.FC<ChildProps> = ({ style }) => {
         onValueChange={handleSpeedChange}
         style={styles.slider}
       />
-      <TouchableOpacity
-        onPress={onButtonPressed}
-        style={styles.buttonContainer}
-      >
-        <Text style={styles.button}>{`${playbackSpeed}x`}</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -53,15 +54,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   buttonContainer: {
-    width: 70,
-    alignItems: "flex-end",
-    paddingLeft: 20,
+    width: 50,
+    alignItems: "flex-start",
   },
   button: {
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     borderRadius: 7,
-    left: 6,
     padding: 6,
+    left: -6,
     color: "#088581",
     fontFamily: "SFProRoundedBold",
   },

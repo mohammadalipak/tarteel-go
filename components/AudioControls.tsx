@@ -24,7 +24,8 @@ type ChildProps = {
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
   const { player, isPlaying, currentTime } = useAudioPlayerContext();
-  const { setShowSpeedSettings, playbackSpeed } = useAppStore();
+  const { setShowRepetitionSettings, setShowSpeedSettings, playbackSpeed } =
+    useAppStore();
 
   const onCarModePressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -36,6 +37,7 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
       player.pause();
     } else {
       player.play();
+      setShowRepetitionSettings(false);
     }
   };
 
@@ -65,8 +67,8 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
   return (
     <View style={[style, styles.container]}>
       <View style={styles.left}>
-        <TouchableOpacity onPress={onCarModePressed}>
-          <CarIcon style={styles.carIcon} />
+        <TouchableOpacity onPress={onSpeedPressed}>
+          <Text style={styles.speedButton}>{`${playbackSpeed}x`}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.leftMiddle}>
@@ -85,8 +87,8 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.right}>
-        <TouchableOpacity onPress={onSpeedPressed}>
-          <Text style={styles.speedButton}>{`${playbackSpeed}x`}</Text>
+        <TouchableOpacity onPress={onCarModePressed}>
+          <CarIcon style={styles.carIcon} />
         </TouchableOpacity>
       </View>
     </View>
@@ -98,7 +100,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   carIcon: {
-    opacity: 0.5,
+    opacity: 0.6,
+    width: 50,
   },
   container: {
     alignItems: "center",
@@ -117,12 +120,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
   },
-  right: {},
+  right: {
+    width: 50,
+    alignItems: "flex-end",
+  },
   speedButton: {
     color: "rgba(255, 255, 255, 0.5)",
     fontFamily: "SFProRoundedBold",
-    left: 6,
-    padding: 6,
+    paddingVertical: 20,
+    width: 50,
   },
 });
 
