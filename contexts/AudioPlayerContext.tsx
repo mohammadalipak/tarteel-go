@@ -11,8 +11,12 @@ import {
 } from "expo-audio";
 import React, { createContext, useContext, useEffect, useMemo } from "react";
 
-const AUDIO_URL =
-  "https://download.quranicaudio.com/qdc/abdurrahmaan_as_sudais/murattal/73.mp3";
+const AUDIO_URL = {
+  MISHARY:
+    "https://download.quranicaudio.com/qdc/mishari_al_afasy/murattal/73.mp3",
+  SUDAIS:
+    "https://download.quranicaudio.com/qdc/abdurrahmaan_as_sudais/murattal/73.mp3",
+};
 
 interface WordLocation {
   surah: number;
@@ -37,7 +41,7 @@ const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(
 export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const player = useAudioPlayer({ uri: AUDIO_URL }, 200);
+  const player = useAudioPlayer({ uri: AUDIO_URL.MISHARY }, 200);
   setAudioModeAsync({
     playsInSilentMode: true,
     shouldPlayInBackground: true,
