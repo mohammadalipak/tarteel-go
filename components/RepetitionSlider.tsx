@@ -80,7 +80,15 @@ export default function RepetitionSlider({
         onValueChange={handleValueChange}
         onSlidingComplete={handleSlidingComplete}
         minimumTrackTintColor={isSliding.current ? "#ffffff" : "#ffffff7e"}
-        maximumTrackTintColor="#ffffff20"
+        maximumTrackTintColor={
+          isSliding.current
+            ? sliderValue > maxValue
+              ? "#ffffff"
+              : "#ffffff20"
+            : value > maxValue
+            ? "#ffffff7e"
+            : "#ffffff20"
+        }
         thumbTintColor="transparent"
         tapToSeek
       />

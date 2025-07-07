@@ -64,9 +64,10 @@ const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
   };
 
   const onVerseRepetitionChanged = (value: number) => {
-    if (value < VERSE_REPETITION_CONFIG.maxSetting) {
+    if (value <= VERSE_REPETITION_CONFIG.maxSetting) {
       setVerseRepetition(value);
     } else {
+      // Only set to 10000 (infinity) when value is beyond maxSetting
       setVerseRepetition(10000);
     }
   };
