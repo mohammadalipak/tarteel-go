@@ -2,6 +2,7 @@ import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   StyleProp,
   StyleSheet,
@@ -69,11 +70,26 @@ const Header: React.FC<ChildProps> = ({ style }) => {
   return (
     <View style={[styles.header, style]}>
       <View style={styles.leftContainer}>
-        <TouchableOpacity onPress={onSurahPressed}>
-          <Text style={styles.title}>Al-Muzzammil : {displayedVerse}</Text>
-        </TouchableOpacity>
-        <Text style={styles.subtitle}>{getRepetitionMessage()}</Text>
+        <View>
+          <TouchableOpacity onPress={onSurahPressed}>
+            <Image
+              source={require("@/assets/images/muzzammil.png")}
+              style={{ width: 65, height: 65 }}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.titleContainer}>
+          <TouchableOpacity onPress={onSurahPressed}>
+            <Text style={styles.title}>Al-Muzzammil : {displayedVerse}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onRepeatPressed}>
+            <Text style={styles.subtitle}>{getRepetitionMessage()}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
       <View style={styles.rightContainer}>
         <Pressable onPress={onRepeatPressed}>
           <View
@@ -101,9 +117,14 @@ const Header: React.FC<ChildProps> = ({ style }) => {
 };
 
 const styles = StyleSheet.create({
-  header: { flexDirection: "row" },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   leftContainer: {
+    alignItems: "center",
     flex: 1,
+    flexDirection: "row",
   },
   rightContainer: {
     flexDirection: "row",
@@ -117,6 +138,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     paddingVertical: 6,
     paddingHorizontal: 12,
+    top: -10,
   },
   subtitle: {
     color: "rgba(255, 255, 255, 0.5)",
@@ -127,6 +149,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: 600,
+  },
+  titleContainer: {
+    marginLeft: 10,
   },
 });
 

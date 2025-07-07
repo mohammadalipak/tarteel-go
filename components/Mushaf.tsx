@@ -12,7 +12,7 @@ import {
 import Words from "@/assets/data/text_quran.json";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 import { useAppStore } from "@/store/useAppStore";
-import { createWordKey } from "@/utils/audioWordMapping";
+import { createWordKey, getVerseStartTime } from "@/utils/audioWordMapping";
 import { getAyahs } from "../helpers";
 import BoldableWord from "./BoldableWord";
 
@@ -23,7 +23,7 @@ type ChildProps = {
 const SCROLL_THROTTLE_MS = 150;
 
 const Mushaf: React.FC<ChildProps> = ({ style }) => {
-  const { currentWordKey, currentWord } = useAudioPlayerContext();
+  const { currentWordKey, currentWord, player } = useAudioPlayerContext();
   const { startVerse, endVerse } = useAppStore();
   const flatListRef = useRef<FlatList>(null);
   const lastScrollTimeRef = useRef<number>(0);
@@ -101,6 +101,14 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
     throttledScrollToWord(currentWord);
   }, [currentWord, throttledScrollToWord]);
 
+  const handleVersePress = (surah: number, ayah: number) => {
+    const verseStartTime = getVerseStartTime(ayah);
+    if (verseStartTime !== null && player && player.seekTo) {
+      player.seekTo(verseStartTime);
+      player.play();
+    }
+  };
+
   const renderWord = (
     word: string,
     wordIndex: number,
@@ -155,7 +163,9 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
         }}
         renderItem={({ item }) => {
           return (
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleVersePress(item.surah, item.ayah)}
+            >
               <View style={styles.ayahContainer}>
                 {item.words.map((word: string, index: number) =>
                   renderWord(word, index, item.surah, item.ayah)
