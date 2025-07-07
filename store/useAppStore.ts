@@ -5,6 +5,7 @@ interface AppState {
   endVerse: number;
   showRepetitionSettings: boolean;
   showSpeedSettings: boolean;
+  showTranslation: boolean;
   playbackSpeed: number;
   sectionRepetition: number;
   verseRepetition: number;
@@ -14,6 +15,8 @@ interface AppState {
   toggleRepetitionSettings: () => void;
   setSectionRepetition: (times: number) => void;
   setShowSpeedSettings: (show: boolean) => void;
+  setShowTranslation: (show: boolean) => void;
+  toggleTranslation: () => void;
   setPlaybackSpeed: (speed: number) => void;
   setVerseRepetition: (times: number) => void;
 }
@@ -23,6 +26,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   endVerse: 20,
   showRepetitionSettings: false,
   showSpeedSettings: false,
+  showTranslation: true,
   playbackSpeed: 1,
   sectionRepetition: 1,
   verseRepetition: 1,
@@ -38,8 +42,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   setEndVerse: (verse) => set({ endVerse: verse }),
   setShowRepetitionSettings: (show) => set({ showRepetitionSettings: show }),
   toggleRepetitionSettings: () => set((state) => ({ showRepetitionSettings: !state.showRepetitionSettings })),
-  setShowSpeedSettings: (show) => set({ showSpeedSettings: show }),
-  setPlaybackSpeed: (speed) => set({ playbackSpeed: speed }),
   setSectionRepetition: (times) => set({ sectionRepetition: times }),
+  setShowSpeedSettings: (show) => set({ showSpeedSettings: show }),
+  setShowTranslation: (show) => set({ showTranslation: show }),
+  toggleTranslation: () => set((state) => ({ showTranslation: !state.showTranslation })),
+  setPlaybackSpeed: (speed) => set({ playbackSpeed: speed }),
   setVerseRepetition: (times) => set({ verseRepetition: times }),
 }));

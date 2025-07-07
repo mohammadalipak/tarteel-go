@@ -13,6 +13,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
+    Inter: require("../assets/fonts/InterVariable.ttf"),
     Lalezar: require("../assets/fonts/Lalezar-Regular.ttf"),
     Makkah: require("../assets/fonts/Makkah-Bold.ttf"),
     May: require("../assets/fonts/May-Bold.ttf"),

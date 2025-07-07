@@ -1,10 +1,12 @@
 import MaskedView from "@react-native-masked-view/masked-view";
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { Fragment, useCallback, useEffect, useRef } from "react";
 import {
   FlatList,
   StyleProp,
   StyleSheet,
+  Text,
   TextStyle,
   TouchableOpacity,
   View,
@@ -12,6 +14,9 @@ import {
 } from "react-native";
 
 import Words from "@/assets/data/text_quran.json";
+import Translations from "@/assets/data/translation_quran.json";
+import TranslationOffIcon from "@/assets/images/translation-off.svg";
+import TranslationOnIcon from "@/assets/images/translation-on.svg";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 import { useAppStore } from "@/store/useAppStore";
 import { createWordKey, getVerseStartTime } from "@/utils/audioWordMapping";
@@ -26,7 +31,8 @@ const SCROLL_THROTTLE_MS = 150;
 
 const Mushaf: React.FC<ChildProps> = ({ style }) => {
   const { currentWordKey, currentWord, player } = useAudioPlayerContext();
-  const { startVerse, endVerse } = useAppStore();
+  const { startVerse, endVerse, showTranslation, toggleTranslation } =
+    useAppStore();
   const flatListRef = useRef<FlatList>(null);
   const lastScrollTimeRef = useRef<number>(0);
   const pendingScrollRef = useRef<typeof currentWord>(null);
@@ -111,6 +117,13 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
     }
   };
 
+  const getTranslationWords = (surah: number, ayah: number) => {
+    return Translations.filter(
+      (translation: any) =>
+        translation.surah_number === surah && translation.ayah_number === ayah
+    );
+  };
+
   const renderWord = (
     word: string,
     wordIndex: number,
@@ -142,6 +155,12 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
         ></BoldableWord>
       </Fragment>
     );
+  };
+
+  const onTranslationButtonPressed = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    toggleTranslation();
   };
 
   return (
@@ -189,12 +208,43 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
                   {item.words.map((word: string, index: number) =>
                     renderWord(word, index, item.surah, item.ayah)
                   )}
+                  {showTranslation && (
+                    <View style={styles.translation}>
+                      {getTranslationWords(item.surah, item.ayah).map(
+                        (translationWord: any, index: number) => (
+                          <Text
+                            key={`translation-${item.surah}-${item.ayah}-${index}`}
+                            style={styles.translationWord}
+                          >
+                            {translationWord.text}
+                          </Text>
+                        )
+                      )}
+                    </View>
+                  )}
                 </View>
               </TouchableOpacity>
             );
           }}
         />
       </MaskedView>
+
+      <View
+        style={[
+          styles.translationButtonContainer,
+          {
+            opacity: showTranslation ? 1 : 0.7,
+          },
+        ]}
+      >
+        <TouchableOpacity onPress={onTranslationButtonPressed}>
+          {showTranslation ? (
+            <TranslationOnIcon width={30} height={30} />
+          ) : (
+            <TranslationOffIcon width={30} height={30} />
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -242,13 +292,32 @@ const styles = StyleSheet.create({
   } as TextStyle,
   currentWord: {
     color: "#ffffff",
-    textShadowColor: "rgba(200,200,200,.7)",
+    textShadowColor: "rgba(200,200,200,0.7)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 5,
   } as TextStyle,
   flatList: {
     paddingTop: 30,
   },
+  translation: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
+    justifyContent: "flex-start",
+  } as ViewStyle,
+  translationWord: {
+    color: "rgba(255,255,255,0.4)",
+    fontSize: 14,
+    fontFamily: "Inter",
+    marginRight: 4,
+    marginBottom: 2,
+  } as TextStyle,
+  translationButtonContainer: {
+    position: "absolute",
+    bottom: 10,
+    left: 30,
+    zIndex: 10,
+  } as ViewStyle,
 });
 
 export default Mushaf;
