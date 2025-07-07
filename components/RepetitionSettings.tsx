@@ -15,6 +15,10 @@ type ChildProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+const SECTION_REPETITION_CONFIG = {
+  maxSetting: 15,
+  minSetting: 1,
+};
 const VERSE_REPETITION_CONFIG = {
   maxSetting: 15,
   minSetting: 1,
@@ -27,6 +31,7 @@ const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
     sectionRepetition,
     setStartVerse,
     setEndVerse,
+    setSectionRepetition,
     setVerseRepetition,
     verseRepetition,
   } = useAppStore();
@@ -63,6 +68,15 @@ const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
     );
   };
 
+  const onSectionRepetitionChanged = (value: number) => {
+    if (value <= SECTION_REPETITION_CONFIG.maxSetting) {
+      setSectionRepetition(value);
+    } else {
+      // Only set to 10000 (infinity) when value is beyond maxSetting
+      setSectionRepetition(10000);
+    }
+  };
+
   const onVerseRepetitionChanged = (value: number) => {
     if (value <= VERSE_REPETITION_CONFIG.maxSetting) {
       setVerseRepetition(value);
@@ -75,24 +89,44 @@ const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
   return (
     <View style={[style, styles.container]}>
       <View style={styles.verseSettings}>
-        <Text style={styles.title}>Verse Repetition</Text>
-
-        <View>
-          <Text>{`${verseRepetition}x`}</Text>
-          <RepetitionSlider
-            minValue={VERSE_REPETITION_CONFIG.minSetting}
-            maxValue={VERSE_REPETITION_CONFIG.maxSetting}
-            markers={[1, 5, 10, 15, Infinity]}
-            valueStep={1}
-            value={verseRepetition}
-            onValueChange={onVerseRepetitionChanged}
-            style={styles.slider}
-          />
+        <View style={styles.settingsHeader}>
+          <Text style={styles.title}>Verse Repetition</Text>
+          <Text style={styles.settingsValue}>
+            {verseRepetition <= VERSE_REPETITION_CONFIG.maxSetting
+              ? `${verseRepetition}x`
+              : "∞"}
+          </Text>
         </View>
+
+        <RepetitionSlider
+          minValue={VERSE_REPETITION_CONFIG.minSetting}
+          maxValue={VERSE_REPETITION_CONFIG.maxSetting}
+          markers={[1, 5, 10, 15, Infinity]}
+          valueStep={1}
+          value={verseRepetition}
+          onValueChange={onVerseRepetitionChanged}
+        />
       </View>
 
       <View style={styles.sectionSettings}>
-        <Text style={styles.title}>Section Repetition</Text>
+        <View style={styles.settingsHeader}>
+          <Text style={styles.title}>Section Repetition</Text>
+          <Text style={styles.settingsValue}>
+            {sectionRepetition <= SECTION_REPETITION_CONFIG.maxSetting
+              ? `${sectionRepetition}x`
+              : "∞"}
+          </Text>
+        </View>
+
+        <RepetitionSlider
+          minValue={SECTION_REPETITION_CONFIG.minSetting}
+          maxValue={SECTION_REPETITION_CONFIG.maxSetting}
+          markers={[1, 5, 10, 15, Infinity]}
+          valueStep={1}
+          value={sectionRepetition}
+          onValueChange={onSectionRepetitionChanged}
+          style={styles.sectionSlider}
+        />
 
         <TouchableOpacity
           style={styles.sectionSelector}
@@ -108,10 +142,6 @@ const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
           <Text style={styles.label}>End</Text>
           <Text style={styles.selection}>Al-Muzzammil {endVerse}</Text>
         </TouchableOpacity>
-
-        <View>
-          <Text>{`${sectionRepetition}x`}</Text>
-        </View>
       </View>
     </View>
   );
@@ -131,14 +161,16 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.5)",
     fontSize: 30,
     fontWeight: 600,
-    marginBottom: 20,
   },
   sectionSelector: {
     flexDirection: "row",
     marginBottom: 20,
   },
   sectionSettings: {
-    marginTop: 50,
+    marginTop: 80,
+  },
+  sectionSlider: {
+    marginBottom: 40,
   },
   selection: {
     color: "#fff",
@@ -147,6 +179,16 @@ const styles = StyleSheet.create({
   },
   verseSettings: {
     marginTop: 40,
+  },
+  settingsHeader: {
+    flexDirection: "row",
+    marginBottom: 30,
+  },
+  settingsValue: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: 600,
+    marginLeft: 10,
   },
 });
 
