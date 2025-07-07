@@ -7,7 +7,7 @@ type ChildProps = {
   text: string;
 };
 
-const Word: React.FC<ChildProps> = ({ bold, style, text }) => {
+const BoldableWord: React.FC<ChildProps> = ({ bold, style, text }) => {
   const OFFSET = bold ? 0.4 : 0;
 
   return (
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
   foreground: {},
 });
 
-export default Word;
+export default BoldableWord;

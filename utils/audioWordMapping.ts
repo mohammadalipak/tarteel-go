@@ -64,6 +64,26 @@ export const createWordKey = (surah: number, ayah: number, wordIndex: number): s
   return `${surah}-${ayah}-${wordIndex}`;
 };
 
+// Get the timestamp for the start of a specific verse
+export const getVerseStartTime = (ayah: number): number | null => {
+  const ayahData = (audioData as AudioSegment[]).find(segment => segment.ayah === ayah);
+  return ayahData ? ayahData.timestamp_from / 1000 : null; // Convert to seconds
+};
+
+// Get the timestamp for the end of a specific verse
+export const getVerseEndTime = (ayah: number): number | null => {
+  const ayahData = (audioData as AudioSegment[]).find(segment => segment.ayah === ayah);
+  return ayahData ? ayahData.timestamp_to / 1000 : null; // Convert to seconds
+};
+
+// Check if a time position is within the allowed verse range
+export const isTimeInVerseRange = (timeMs: number, startVerse: number, endVerse: number): boolean => {
+  const currentWord = findCurrentWord(timeMs);
+  if (!currentWord) return false;
+  
+  return currentWord.ayah >= startVerse && currentWord.ayah <= endVerse;
+};
+
 // Find the next verse relative to current time
 export const findNextVerse = (currentTimeMs: number): number | null => {
   const currentTime = currentTimeMs * 1000;

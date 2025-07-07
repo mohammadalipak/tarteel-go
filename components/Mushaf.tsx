@@ -11,6 +11,7 @@ import {
 
 import Words from "@/assets/data/text_quran.json";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
+import { useAppStore } from "@/store/useAppStore";
 import { createWordKey } from "@/utils/audioWordMapping";
 import { getAyahs } from "../helpers";
 import BoldableWord from "./BoldableWord";
@@ -23,12 +24,16 @@ const SCROLL_THROTTLE_MS = 150;
 
 const Mushaf: React.FC<ChildProps> = ({ style }) => {
   const { currentWordKey, currentWord } = useAudioPlayerContext();
+  const { startVerse, endVerse } = useAppStore();
   const flatListRef = useRef<FlatList>(null);
   const lastScrollTimeRef = useRef<number>(0);
   const pendingScrollRef = useRef<typeof currentWord>(null);
 
-  // Get all ayahs data for reference
-  const ayahsData = getAyahs(Words);
+  // Get all ayahs data and filter by verse range
+  const allAyahsData = getAyahs(Words);
+  const ayahsData = allAyahsData.filter(
+    (ayah) => ayah.ayah >= startVerse && ayah.ayah <= endVerse
+  );
 
   // Scroll execution function
   const executeScroll = useCallback(
@@ -179,9 +184,9 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   word: {
     color: "rgba(255,255,255,0.1)",
-    fontSize: 30,
+    fontSize: 32,
     fontFamily: "UthmanicHafs",
-    marginLeft: 2,
+    marginLeft: 5,
     writingDirection: "rtl",
   } as TextStyle,
   highlightedWord: {
@@ -191,7 +196,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     textShadowColor: "rgba(200,200,200,.7)",
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    textShadowRadius: 5,
   } as TextStyle,
 });
 

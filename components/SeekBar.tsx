@@ -1,4 +1,10 @@
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
+import { useAppStore } from "@/store/useAppStore";
+import {
+  findCurrentWord,
+  getVerseEndTime,
+  getVerseStartTime,
+} from "@/utils/audioWordMapping";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
 import React, { useRef, useState } from "react";
@@ -11,7 +17,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { findCurrentWord } from "@/utils/audioWordMapping";
 
 interface AudioSeekbarProps {
   style?: StyleProp<ViewStyle>;
@@ -19,9 +24,15 @@ interface AudioSeekbarProps {
 
 export default function AudioSeekbar({ style }: AudioSeekbarProps) {
   const { player, currentTime, duration } = useAudioPlayerContext();
+  const { startVerse, endVerse } = useAppStore();
   const [sliderValue, setSliderValue] = useState(0);
   const isSliding = useRef(false);
   const lastVerseRef = useRef<number | null>(null);
+
+  // Calculate verse range limits
+  const verseRangeStart = getVerseStartTime(startVerse) || 0;
+  const verseRangeEnd = getVerseEndTime(endVerse) || duration;
+  const verseRangeDuration = verseRangeEnd - verseRangeStart;
 
   const handleSlidingStart = () => {
     isSliding.current = true;
@@ -32,14 +43,20 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
 
   const handleValueChange = async (value: number) => {
     if (isSliding.current) {
+      // Map slider value (0-1) to actual time range within verse bounds
+      const actualTime = verseRangeStart + value * verseRangeDuration;
       setSliderValue(value);
 
       // Find the current word at this position
-      const currentWord = findCurrentWord(value);
+      const currentWord = findCurrentWord(actualTime);
       const currentVerse = currentWord?.ayah;
 
       // Check if verse has changed and provide haptic feedback
-      if (currentVerse && lastVerseRef.current && currentVerse !== lastVerseRef.current) {
+      if (
+        currentVerse &&
+        lastVerseRef.current &&
+        currentVerse !== lastVerseRef.current
+      ) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         lastVerseRef.current = currentVerse;
       } else if (currentVerse && !lastVerseRef.current) {
@@ -48,12 +65,12 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
       }
 
       if (player && player.seekTo) {
-        await player.seekTo(value);
+        await player.seekTo(actualTime);
       }
     }
   };
 
-  const handleSlidingComplete = async (value: number) => {
+  const handleSlidingComplete = async () => {
     isSliding.current = false;
     setSliderValue(0);
     // Reset verse tracking when sliding completes
@@ -80,8 +97,18 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
           },
         ]}
         minimumValue={0}
-        maximumValue={duration}
-        value={isSliding.current ? sliderValue : currentTime}
+        maximumValue={1}
+        value={
+          isSliding.current
+            ? sliderValue
+            : Math.max(
+                0,
+                Math.min(
+                  1,
+                  (currentTime - verseRangeStart) / verseRangeDuration
+                )
+              )
+        }
         onSlidingStart={handleSlidingStart}
         onValueChange={handleValueChange}
         onSlidingComplete={handleSlidingComplete}
@@ -92,14 +119,27 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
       />
       <View style={styles.footer}>
         <Text style={styles.leftLabel}>
-          {formatTime(isSliding.current ? sliderValue : currentTime)}
+          {formatTime(
+            isSliding.current
+              ? sliderValue * verseRangeDuration
+              : Math.max(
+                  verseRangeStart,
+                  Math.min(verseRangeEnd, currentTime)
+                ) - verseRangeStart
+          )}
         </Text>
         <TouchableOpacity onPress={onQariPressed} style={styles.middleLabel}>
           <Text style={styles.qari}>AbdurRahman AsSudais</Text>
         </TouchableOpacity>
         <Text style={styles.rightLabel}>
           {`-${formatTime(
-            duration - (isSliding.current ? sliderValue : currentTime)
+            verseRangeEnd -
+              (isSliding.current
+                ? verseRangeStart + sliderValue * verseRangeDuration
+                : Math.max(
+                    verseRangeStart,
+                    Math.min(verseRangeEnd, currentTime)
+                  ))
           )}`}
         </Text>
       </View>
