@@ -6,12 +6,16 @@ interface AppState {
   showRepetitionSettings: boolean;
   showSpeedSettings: boolean;
   playbackSpeed: number;
+  sectionRepetition: number;
+  verseRepetition: number;
   setStartVerse: (verse: number) => void;
   setEndVerse: (verse: number) => void;
   setShowRepetitionSettings: (show: boolean) => void;
   toggleRepetitionSettings: () => void;
+  setSectionRepetition: (times: number) => void;
   setShowSpeedSettings: (show: boolean) => void;
   setPlaybackSpeed: (speed: number) => void;
+  setVerseRepetition: (times: number) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -20,6 +24,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   showRepetitionSettings: false,
   showSpeedSettings: false,
   playbackSpeed: 1,
+  sectionRepetition: 1,
+  verseRepetition: 1,
   setStartVerse: (verse) => {
     set({ startVerse: verse });
     // If the new start verse is greater than or equal to the current end verse,
@@ -34,4 +40,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   toggleRepetitionSettings: () => set((state) => ({ showRepetitionSettings: !state.showRepetitionSettings })),
   setShowSpeedSettings: (show) => set({ showSpeedSettings: show }),
   setPlaybackSpeed: (speed) => set({ playbackSpeed: speed }),
+  setSectionRepetition: (times) => set({ sectionRepetition: times }),
+  setVerseRepetition: (times) => set({ verseRepetition: times }),
 }));

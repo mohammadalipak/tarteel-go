@@ -15,8 +15,21 @@ type ChildProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+const VERSE_REPETITION_CONFIG = {
+  maxSetting: 15,
+  minSetting: 1,
+};
+
 const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
-  const { startVerse, endVerse, setStartVerse, setEndVerse } = useAppStore();
+  const {
+    startVerse,
+    endVerse,
+    sectionRepetition,
+    setStartVerse,
+    setEndVerse,
+    setVerseRepetition,
+    verseRepetition,
+  } = useAppStore();
   const verseNumbers = Array.from({ length: 20 }, (_, i) => i + 1);
   const verseOptions = verseNumbers.map((num) => `Al-Muzzammil ${num}`);
 
@@ -49,12 +62,32 @@ const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
       { cancelable: true }
     );
   };
+
+  const onVerseRepetitionChanged = (value: number) => {
+    if (value < VERSE_REPETITION_CONFIG.maxSetting) {
+      setVerseRepetition(value);
+    } else {
+      setVerseRepetition(10000);
+    }
+  };
+
   return (
     <View style={[style, styles.container]}>
       <View style={styles.verseSettings}>
         <Text style={styles.title}>Verse Repetition</Text>
 
-        <RepetitionSlider></RepetitionSlider>
+        <View>
+          <Text>{`${verseRepetition}x`}</Text>
+          <RepetitionSlider
+            minValue={VERSE_REPETITION_CONFIG.minSetting}
+            maxValue={VERSE_REPETITION_CONFIG.maxSetting}
+            markers={[1, 5, 10, 15, Infinity]}
+            valueStep={1}
+            value={verseRepetition}
+            onValueChange={onVerseRepetitionChanged}
+            style={styles.slider}
+          />
+        </View>
       </View>
 
       <View style={styles.sectionSettings}>
@@ -75,7 +108,9 @@ const RepetitionSettings: React.FC<ChildProps> = ({ style }) => {
           <Text style={styles.selection}>Al-Muzzammil {endVerse}</Text>
         </TouchableOpacity>
 
-        <RepetitionSlider></RepetitionSlider>
+        <View>
+          <Text>{`${sectionRepetition}x`}</Text>
+        </View>
       </View>
     </View>
   );
