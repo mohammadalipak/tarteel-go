@@ -1,3 +1,5 @@
+import MaskedView from "@react-native-masked-view/masked-view";
+import { LinearGradient } from "expo-linear-gradient";
 import { Fragment, useCallback, useEffect, useRef } from "react";
 import {
   FlatList,
@@ -144,37 +146,55 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
 
   return (
     <View style={[styles.container, style]}>
-      <FlatList
-        ref={flatListRef}
-        contentContainerStyle={{ paddingRight: 30 }}
-        data={ayahsData}
-        keyExtractor={(item) => `${item.surah}-${item.ayah}`}
-        onScrollToIndexFailed={(info) => {
-          // Handle failed scroll attempts
-          console.warn("Scroll to index failed:", info);
-          const wait = new Promise((resolve) => setTimeout(resolve, 500));
-          wait.then(() => {
-            flatListRef.current?.scrollToIndex({
-              index: info.index,
-              animated: true,
-              viewPosition: 0.33,
+      <MaskedView
+        style={styles.maskedContainer}
+        maskElement={
+          <View style={styles.maskContainer}>
+            <LinearGradient
+              colors={["transparent", "black"]}
+              style={styles.topGradient}
+            />
+            <View style={styles.content} />
+            <LinearGradient
+              colors={["black", "transparent"]}
+              style={styles.bottomGradient}
+            />
+          </View>
+        }
+      >
+        <FlatList
+          ref={flatListRef}
+          contentContainerStyle={{ paddingRight: 30 }}
+          data={ayahsData}
+          keyExtractor={(item) => `${item.surah}-${item.ayah}`}
+          onScrollToIndexFailed={(info) => {
+            // Handle failed scroll attempts
+            console.warn("Scroll to index failed:", info);
+            const wait = new Promise((resolve) => setTimeout(resolve, 500));
+            wait.then(() => {
+              flatListRef.current?.scrollToIndex({
+                index: info.index,
+                animated: true,
+                viewPosition: 0.33,
+              });
             });
-          });
-        }}
-        renderItem={({ item }) => {
-          return (
-            <TouchableOpacity
-              onPress={() => handleVersePress(item.surah, item.ayah)}
-            >
-              <View style={styles.ayahContainer}>
-                {item.words.map((word: string, index: number) =>
-                  renderWord(word, index, item.surah, item.ayah)
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-      />
+          }}
+          style={styles.flatList}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                onPress={() => handleVersePress(item.surah, item.ayah)}
+              >
+                <View style={styles.ayahContainer}>
+                  {item.words.map((word: string, index: number) =>
+                    renderWord(word, index, item.surah, item.ayah)
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </MaskedView>
     </View>
   );
 };
@@ -191,6 +211,24 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     paddingLeft: 30,
+    flex: 1,
+  } as ViewStyle,
+  maskedContainer: {
+    flex: 1,
+  } as ViewStyle,
+  maskContainer: {
+    flex: 1,
+    backgroundColor: "transparent",
+  } as ViewStyle,
+  topGradient: {
+    height: 60,
+  } as ViewStyle,
+  content: {
+    flex: 1,
+    backgroundColor: "black",
+  } as ViewStyle,
+  bottomGradient: {
+    height: 60,
   } as ViewStyle,
   word: {
     color: "rgba(255,255,255,0.1)",
@@ -208,6 +246,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 5,
   } as TextStyle,
+  flatList: {
+    paddingTop: 30,
+  },
 });
 
 export default Mushaf;
