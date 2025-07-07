@@ -214,7 +214,12 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
                         (translationWord: any, index: number) => (
                           <Text
                             key={`translation-${item.surah}-${item.ayah}-${index}`}
-                            style={styles.translationWord}
+                            style={[
+                              styles.translationWord,
+                              currentWord?.ayah === item.ayah &&
+                                currentWord?.wordIndex === index + 1 &&
+                                styles.currentWord,
+                            ]}
                           >
                             {translationWord.text}
                           </Text>
