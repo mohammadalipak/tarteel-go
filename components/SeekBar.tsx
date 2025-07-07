@@ -122,24 +122,20 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
           {formatTime(
             isSliding.current
               ? sliderValue * verseRangeDuration
-              : Math.max(
-                  verseRangeStart,
-                  Math.min(verseRangeEnd, currentTime)
-                ) - verseRangeStart
+              : currentTime - verseRangeStart
           )}
         </Text>
+
         <TouchableOpacity onPress={onQariPressed} style={styles.middleLabel}>
           <Text style={styles.qari}>AbdurRahman AsSudais</Text>
         </TouchableOpacity>
+
         <Text style={styles.rightLabel}>
           {`-${formatTime(
             verseRangeEnd -
               (isSliding.current
                 ? verseRangeStart + sliderValue * verseRangeDuration
-                : Math.max(
-                    verseRangeStart,
-                    Math.min(verseRangeEnd, currentTime)
-                  ))
+                : currentTime)
           )}`}
         </Text>
       </View>

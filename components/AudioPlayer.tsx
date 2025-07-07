@@ -1,31 +1,34 @@
-import * as Haptics from "expo-haptics";
-import { Alert, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
+import { useAppStore } from "@/store/useAppStore";
 import AudioControls from "./AudioControls";
 import SeekBar from "./SeekBar";
+import SpeedSettings from "./SpeedSettings";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
 };
 
 const AudioPlayer: React.FC<ChildProps> = ({ style }) => {
-  const handlePress = () => {
-    Haptics.selectionAsync();
-    Alert.alert("Image button pressed!");
-  };
+  const { showSpeedSettings } = useAppStore();
 
   return (
     <View style={[styles.container, style]}>
       <SeekBar style={styles.seekBar}></SeekBar>
-      <AudioControls style={styles.audioControls}></AudioControls>
+      {showSpeedSettings ? (
+        <SpeedSettings style={styles.body}></SpeedSettings>
+      ) : (
+        <AudioControls style={styles.body}></AudioControls>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  audioControls: {
+  body: {
     flex: 1,
     marginTop: 20,
+    width: "100%",
   },
   container: {
     marginBottom: 50,

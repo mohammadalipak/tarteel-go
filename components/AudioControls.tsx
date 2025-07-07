@@ -15,6 +15,7 @@ import PlayIcon from "@/assets/images/play-icon.svg";
 import SkipBackwardIcon from "@/assets/images/skip-backward-icon.svg";
 import SkipForwardIcon from "@/assets/images/skip-forward-icon.svg";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
+import { useAppStore } from "@/store/useAppStore";
 import { findNextVerse, findPreviousVerse } from "@/utils/audioWordMapping";
 
 type ChildProps = {
@@ -23,6 +24,7 @@ type ChildProps = {
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
   const { player, isPlaying, currentTime } = useAudioPlayerContext();
+  const { setShowSpeedSettings, playbackSpeed } = useAppStore();
 
   const onCarModePressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -55,6 +57,11 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
     }
   };
 
+  const onSpeedPressed = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setShowSpeedSettings(true);
+  };
+
   return (
     <View style={[style, styles.container]}>
       <View style={styles.left}>
@@ -78,7 +85,9 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.right}>
-        <Text style={styles.speedButton}>1.5x</Text>
+        <TouchableOpacity onPress={onSpeedPressed}>
+          <Text style={styles.speedButton}>{`${playbackSpeed}x`}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -112,6 +121,8 @@ const styles = StyleSheet.create({
   speedButton: {
     color: "rgba(255, 255, 255, 0.5)",
     fontFamily: "SFProRoundedBold",
+    left: 6,
+    padding: 6,
   },
 });
 

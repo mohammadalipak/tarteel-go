@@ -44,7 +44,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const status = useAudioPlayerStatus(player);
-  const { startVerse, endVerse } = useAppStore();
+  const { startVerse, endVerse, playbackSpeed } = useAppStore();
 
   const currentTime = status.currentTime || 0;
   const duration = status.duration || 0;
@@ -90,6 +90,13 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
   }, [currentWord, endVerse, startVerse, isPlaying, player]);
+
+  // Update playback speed when it changes in zustand store
+  useEffect(() => {
+    if (player && player.setPlaybackRate && isPlaying) {
+      player.setPlaybackRate(playbackSpeed, "high");
+    }
+  }, [player, playbackSpeed, isPlaying]);
 
   return (
     <AudioPlayerContext.Provider
