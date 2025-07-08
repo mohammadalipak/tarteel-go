@@ -22,6 +22,7 @@ interface WordLocation {
   surah: number;
   ayah: number;
   wordIndex: number;
+  segmentIndex?: number;
 }
 
 interface AudioPlayerContextType {

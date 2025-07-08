@@ -18,6 +18,7 @@ interface WordLocation {
   surah: number;
   ayah: number;
   wordIndex: number;
+  segmentIndex?: number;
 }
 
 // Parse the segments string into an array of word timings
