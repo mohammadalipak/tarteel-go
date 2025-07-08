@@ -106,7 +106,14 @@ const Header: React.FC<ChildProps> = ({ style }) => {
               fill={showRepetitionSettings ? "#088581" : "#fff"}
               style={[
                 styles.repeatButton,
-                { opacity: showRepetitionSettings ? 1 : 0.7 },
+                {
+                  opacity:
+                    showRepetitionSettings ||
+                    verseRepetition > 1 ||
+                    sectionRepetition > 1
+                      ? 1
+                      : 0.7,
+                },
               ]}
             />
           </View>
