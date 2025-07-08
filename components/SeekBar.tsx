@@ -1,3 +1,4 @@
+import { QariName } from "@/constants/QariNames";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 import { useAppStore } from "@/store/useAppStore";
 import {
@@ -127,7 +128,7 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
         </Text>
 
         <TouchableOpacity onPress={onQariPressed} style={styles.middleLabel}>
-          <Text style={styles.qari}>AbdurRahman AsSudais</Text>
+          <Text style={styles.qari}>{QariName.MISHARY}</Text>
         </TouchableOpacity>
 
         <Text style={styles.rightLabel}>
