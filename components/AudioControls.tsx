@@ -4,7 +4,6 @@ import {
   StyleProp,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
@@ -16,7 +15,13 @@ import SkipBackwardIcon from "@/assets/images/skip-backward-icon.svg";
 import SkipForwardIcon from "@/assets/images/skip-forward-icon.svg";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 import { useAppStore } from "@/store/useAppStore";
-import { findNextVerse, findPreviousVerse, findCurrentWord, getVerseStartTime, getVerseEndTime } from "@/utils/audioWordMapping";
+import {
+  findCurrentWord,
+  findNextVerse,
+  findPreviousVerse,
+  getVerseStartTime,
+} from "@/utils/audioWordMapping";
+import BounceButton from "./BounceButton";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
@@ -24,8 +29,13 @@ type ChildProps = {
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
   const { player, isPlaying, currentTime } = useAudioPlayerContext();
-  const { setShowRepetitionSettings, setShowSpeedSettings, playbackSpeed, startVerse, endVerse } =
-    useAppStore();
+  const {
+    setShowRepetitionSettings,
+    setShowSpeedSettings,
+    playbackSpeed,
+    startVerse,
+    endVerse,
+  } = useAppStore();
 
   const onCarModePressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -117,29 +127,33 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
   return (
     <View style={[style, styles.container]}>
       <View style={styles.left}>
-        <TouchableOpacity onPress={onSpeedPressed}>
+        <BounceButton onPress={onSpeedPressed}>
           <Text style={styles.speedButton}>{`${playbackSpeed}x`}</Text>
-        </TouchableOpacity>
+        </BounceButton>
       </View>
       <View style={styles.leftMiddle}>
-        <TouchableOpacity onPress={onSkipBackwardPressed} style={styles.button}>
+        <BounceButton onPress={onSkipBackwardPressed} style={styles.button}>
           <SkipBackwardIcon />
-        </TouchableOpacity>
+        </BounceButton>
       </View>
       <View style={styles.middle}>
-        <TouchableOpacity onPress={onPlayPausePressed} style={styles.button}>
+        <BounceButton
+          onPress={onPlayPausePressed}
+          scale={0.1}
+          style={styles.button}
+        >
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
-        </TouchableOpacity>
+        </BounceButton>
       </View>
       <View style={styles.rightMiddle}>
-        <TouchableOpacity onPress={onSkipForwardPressed} style={styles.button}>
+        <BounceButton onPress={onSkipForwardPressed} style={styles.button}>
           <SkipForwardIcon />
-        </TouchableOpacity>
+        </BounceButton>
       </View>
       <View style={styles.right}>
-        <TouchableOpacity onPress={onCarModePressed}>
+        <BounceButton onPress={onCarModePressed}>
           <CarIcon style={styles.carIcon} />
-        </TouchableOpacity>
+        </BounceButton>
       </View>
     </View>
   );

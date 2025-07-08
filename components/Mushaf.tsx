@@ -22,6 +22,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { createWordKey, getVerseStartTime } from "@/utils/audioWordMapping";
 import { getAyahs } from "../helpers";
 import BoldableWord from "./BoldableWord";
+import BounceButton from "./BounceButton";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
@@ -113,40 +114,39 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
   };
 
   // Function to determine which segment a word belongs to
-  const getWordSegmentIndex = useCallback((
-    surah: number,
-    ayah: number,
-    wordIndex: number
-  ): number => {
-    const ayahData = ayahsData.find(
-      (a) => a.surah === surah && a.ayah === ayah
-    );
-    if (!ayahData) return 0;
-
-    let currentSegmentIndex = 0;
-    let currentWordIndex = 0;
-
-    for (let i = 0; i < ayahData.words.length; i++) {
-      const word = ayahData.words[i];
-
-      if (currentWordIndex === wordIndex - 1) {
-        return currentSegmentIndex;
-      }
-
-      currentWordIndex++;
-
-      // Check if word contains a semantic stop
-      const hasSemanticStop = SEMANTIC_STOPS.some((stop) =>
-        word.includes(stop)
+  const getWordSegmentIndex = useCallback(
+    (surah: number, ayah: number, wordIndex: number): number => {
+      const ayahData = ayahsData.find(
+        (a) => a.surah === surah && a.ayah === ayah
       );
+      if (!ayahData) return 0;
 
-      if (hasSemanticStop || i === ayahData.words.length - 1) {
-        currentSegmentIndex += 2; // Increment by 2 because of interleaved translation segments
+      let currentSegmentIndex = 0;
+      let currentWordIndex = 0;
+
+      for (let i = 0; i < ayahData.words.length; i++) {
+        const word = ayahData.words[i];
+
+        if (currentWordIndex === wordIndex - 1) {
+          return currentSegmentIndex;
+        }
+
+        currentWordIndex++;
+
+        // Check if word contains a semantic stop
+        const hasSemanticStop = SEMANTIC_STOPS.some((stop) =>
+          word.includes(stop)
+        );
+
+        if (hasSemanticStop || i === ayahData.words.length - 1) {
+          currentSegmentIndex += 2; // Increment by 2 because of interleaved translation segments
+        }
       }
-    }
 
-    return currentSegmentIndex;
-  }, [ayahsData]);
+      return currentSegmentIndex;
+    },
+    [ayahsData]
+  );
 
   // Enhanced current word with segment information
   const currentWordWithSegment = useMemo(() => {
@@ -176,13 +176,13 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
         // Find the index of the segment containing the current word
         const segmentIndex = flattenedData.findIndex(
           (item) =>
-            item.type === 'arabic' &&
+            item.type === "arabic" &&
             item.surah === word.surah &&
             item.ayah === word.ayah &&
             item.segmentIndex === word.segmentIndex
         );
 
-        console.log('Scrolling to segment:', {
+        console.log("Scrolling to segment:", {
           currentWord: word,
           segmentIndex,
           totalSegments: flattenedData.length,
@@ -206,7 +206,7 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
             });
           }
         } else {
-          console.warn('Segment not found for word:', word);
+          console.warn("Segment not found for word:", word);
         }
       }
     },
@@ -352,12 +352,16 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
                 <View style={styles.translation}>
                   {item.words.map((translationWord: any, index: number) => {
                     // Calculate the corresponding Arabic word index for this translation word
-                    const translationWordIndex = parseInt(translationWord.word_number);
-                    
+                    const translationWordIndex = parseInt(
+                      translationWord.word_number
+                    );
+
                     const isCurrentTranslationWord =
                       currentWordWithSegment?.ayah === item.ayah &&
-                      currentWordWithSegment?.segmentIndex === item.segmentIndex - 1 &&
-                      currentWordWithSegment?.wordIndex === translationWordIndex;
+                      currentWordWithSegment?.segmentIndex ===
+                        item.segmentIndex - 1 &&
+                      currentWordWithSegment?.wordIndex ===
+                        translationWordIndex;
 
                     return (
                       <Text
@@ -387,13 +391,13 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
           },
         ]}
       >
-        <TouchableOpacity onPress={onTranslationButtonPressed}>
+        <BounceButton onPress={onTranslationButtonPressed} scale={0.1}>
           {showTranslation ? (
             <TranslationOnIcon width={30} height={30} />
           ) : (
             <TranslationOffIcon width={30} height={30} />
           )}
-        </TouchableOpacity>
+        </BounceButton>
       </View>
     </View>
   );

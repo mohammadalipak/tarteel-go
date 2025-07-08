@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
-  Pressable,
   StyleProp,
   StyleSheet,
   Text,
@@ -15,6 +14,7 @@ import {
 import RepeatIcon from "@/assets/images/repeat-icon.svg";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 import { useAppStore } from "@/store/useAppStore";
+import BounceButton from "./BounceButton";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
@@ -91,7 +91,7 @@ const Header: React.FC<ChildProps> = ({ style }) => {
       </View>
 
       <View style={styles.rightContainer}>
-        <Pressable onPress={onRepeatPressed}>
+        <BounceButton onPress={onRepeatPressed} scale={0.9}>
           <View
             style={[
               styles.repeatButtonContainer,
@@ -117,7 +117,7 @@ const Header: React.FC<ChildProps> = ({ style }) => {
               ]}
             />
           </View>
-        </Pressable>
+        </BounceButton>
       </View>
     </View>
   );

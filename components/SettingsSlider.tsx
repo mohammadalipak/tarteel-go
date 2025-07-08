@@ -2,6 +2,7 @@ import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
 import React, { useRef, useState } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import BouncySlider from "./BouncySlider";
 
 interface SettingsSliderProps {
   style?: StyleProp<ViewStyle>;
@@ -64,37 +65,30 @@ export default function SettingsSlider({
 
   return (
     <View style={[style, styles.container]}>
-      <Slider
-        style={[
-          styles.slider,
-          {
-            transform: [
-              {
-                scaleY: isSliding.current ? 3 : 1.5,
-              },
-            ],
-          },
-        ]}
-        minimumValue={minValue}
-        maximumValue={maxValue}
-        step={valueStep}
-        value={isSliding.current ? sliderValue : value}
-        onSlidingStart={handleSlidingStart}
-        onValueChange={handleValueChange}
-        onSlidingComplete={handleSlidingComplete}
-        minimumTrackTintColor={isSliding.current ? "#ffffff" : "#ffffff7e"}
-        maximumTrackTintColor={
-          isSliding.current
-            ? sliderValue >= maxValue
-              ? "#ffffff"
+      <BouncySlider isActive={isSliding.current}>
+        <Slider
+          style={[styles.slider]}
+          minimumValue={minValue}
+          maximumValue={maxValue}
+          step={valueStep}
+          value={isSliding.current ? sliderValue : value}
+          onSlidingStart={handleSlidingStart}
+          onValueChange={handleValueChange}
+          onSlidingComplete={handleSlidingComplete}
+          minimumTrackTintColor={isSliding.current ? "#ffffff" : "#ffffff7e"}
+          maximumTrackTintColor={
+            isSliding.current
+              ? sliderValue >= maxValue
+                ? "#ffffff"
+                : "#ffffff20"
+              : value >= maxValue
+              ? "#ffffff7e"
               : "#ffffff20"
-            : value >= maxValue
-            ? "#ffffff7e"
-            : "#ffffff20"
-        }
-        thumbTintColor="transparent"
-        tapToSeek
-      />
+          }
+          thumbTintColor="transparent"
+          tapToSeek
+        />
+      </BouncySlider>
       <View style={styles.footer}>
         {markers.map((markerValue) => (
           <View key={markerValue} style={styles.marker}>

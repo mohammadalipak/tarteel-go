@@ -9,6 +9,7 @@ import {
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
 import React, { useRef, useState } from "react";
+import BouncySlider from "./BouncySlider";
 import {
   Alert,
   StyleProp,
@@ -86,38 +87,31 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
 
   return (
     <View style={[style, styles.container]}>
-      <Slider
-        style={[
-          styles.slider,
-          {
-            transform: [
-              {
-                scaleY: isSliding.current ? 3 : 1.5,
-              },
-            ],
-          },
-        ]}
-        minimumValue={0}
-        maximumValue={1}
-        value={
-          isSliding.current
-            ? sliderValue
-            : Math.max(
-                0,
-                Math.min(
-                  1,
-                  (currentTime - verseRangeStart) / verseRangeDuration
+      <BouncySlider isActive={isSliding.current}>
+        <Slider
+          style={[styles.slider]}
+          minimumValue={0}
+          maximumValue={1}
+          value={
+            isSliding.current
+              ? sliderValue
+              : Math.max(
+                  0,
+                  Math.min(
+                    1,
+                    (currentTime - verseRangeStart) / verseRangeDuration
+                  )
                 )
-              )
-        }
-        onSlidingStart={handleSlidingStart}
-        onValueChange={handleValueChange}
-        onSlidingComplete={handleSlidingComplete}
-        minimumTrackTintColor={isSliding.current ? "#ffffff" : "#ffffff7e"}
-        maximumTrackTintColor="#ffffff20"
-        thumbTintColor="transparent"
-        tapToSeek
-      />
+          }
+          onSlidingStart={handleSlidingStart}
+          onValueChange={handleValueChange}
+          onSlidingComplete={handleSlidingComplete}
+          minimumTrackTintColor={isSliding.current ? "#ffffff" : "#ffffff7e"}
+          maximumTrackTintColor="#ffffff20"
+          thumbTintColor="transparent"
+          tapToSeek
+        />
+      </BouncySlider>
       <View style={styles.footer}>
         <Text style={styles.leftLabel}>
           {formatTime(
