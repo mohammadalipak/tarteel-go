@@ -26,9 +26,8 @@ interface AudioSeekbarProps {
 
 export default function AudioSeekbar({ style }: AudioSeekbarProps) {
   const { player, currentTime, duration } = useAudioPlayerContext();
-  const { startVerse, endVerse } = useAppStore();
+  const { startVerse, endVerse, isSliding, setIsSliding } = useAppStore();
   const [sliderValue, setSliderValue] = useState(0);
-  const isSliding = useRef(false);
   const lastVerseRef = useRef<number | null>(null);
 
   // Calculate verse range limits
@@ -37,14 +36,14 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
   const verseRangeDuration = verseRangeEnd - verseRangeStart;
 
   const handleSlidingStart = () => {
-    isSliding.current = true;
+    setIsSliding(true);
     // Initialize with current verse when sliding starts
     const currentWord = findCurrentWord(currentTime);
     lastVerseRef.current = currentWord?.ayah || null;
   };
 
   const handleValueChange = async (value: number) => {
-    if (isSliding.current) {
+    if (isSliding) {
       // Map slider value (0-1) to actual time range within verse bounds
       const actualTime = verseRangeStart + value * verseRangeDuration;
       setSliderValue(value);
@@ -73,7 +72,7 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
   };
 
   const handleSlidingComplete = async () => {
-    isSliding.current = false;
+    setIsSliding(false);
     setSliderValue(0);
     // Reset verse tracking when sliding completes
     lastVerseRef.current = null;
@@ -87,13 +86,13 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
 
   return (
     <View style={[style, styles.container]}>
-      <BouncySlider isActive={isSliding.current}>
+      <BouncySlider isActive={isSliding}>
         <Slider
           style={[styles.slider]}
           minimumValue={0}
           maximumValue={1}
           value={
-            isSliding.current
+            isSliding
               ? sliderValue
               : Math.max(
                   0,
@@ -106,7 +105,7 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
           onSlidingStart={handleSlidingStart}
           onValueChange={handleValueChange}
           onSlidingComplete={handleSlidingComplete}
-          minimumTrackTintColor={isSliding.current ? "#ffffff" : "#ffffff7e"}
+          minimumTrackTintColor={isSliding ? "#ffffff" : "#ffffff7e"}
           maximumTrackTintColor="#ffffff20"
           thumbTintColor="transparent"
           tapToSeek
@@ -115,7 +114,7 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
       <View style={styles.footer}>
         <Text style={styles.leftLabel}>
           {formatTime(
-            isSliding.current
+            isSliding
               ? sliderValue * verseRangeDuration
               : currentTime - verseRangeStart
           )}
@@ -128,7 +127,7 @@ export default function AudioSeekbar({ style }: AudioSeekbarProps) {
         <Text style={styles.rightLabel}>
           {`-${formatTime(
             verseRangeEnd -
-              (isSliding.current
+              (isSliding
                 ? verseRangeStart + sliderValue * verseRangeDuration
                 : currentTime)
           )}`}

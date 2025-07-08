@@ -9,6 +9,8 @@ interface AppState {
   playbackSpeed: number;
   sectionRepetition: number;
   verseRepetition: number;
+  isSliding: boolean;
+  speedSettingsTimer: NodeJS.Timeout | null;
   setStartVerse: (verse: number) => void;
   setEndVerse: (verse: number) => void;
   setShowRepetitionSettings: (show: boolean) => void;
@@ -19,6 +21,7 @@ interface AppState {
   toggleTranslation: () => void;
   setPlaybackSpeed: (speed: number) => void;
   setVerseRepetition: (times: number) => void;
+  setIsSliding: (sliding: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -30,6 +33,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   playbackSpeed: 1,
   sectionRepetition: 1,
   verseRepetition: 1,
+  isSliding: false,
+  speedSettingsTimer: null,
   setStartVerse: (verse) => {
     set({ startVerse: verse });
     // If the new start verse is greater than or equal to the current end verse,
@@ -43,9 +48,45 @@ export const useAppStore = create<AppState>((set, get) => ({
   setShowRepetitionSettings: (show) => set({ showRepetitionSettings: show }),
   toggleRepetitionSettings: () => set((state) => ({ showRepetitionSettings: !state.showRepetitionSettings })),
   setSectionRepetition: (times) => set({ sectionRepetition: times }),
-  setShowSpeedSettings: (show) => set({ showSpeedSettings: show }),
+  setShowSpeedSettings: (show) => {
+    const state = get();
+    // Clear existing timer
+    if (state.speedSettingsTimer) {
+      clearTimeout(state.speedSettingsTimer);
+    }
+    
+    set({ showSpeedSettings: show, speedSettingsTimer: null });
+    
+    // If showing speed settings, start timer to auto-hide after 3 seconds
+    if (show) {
+      const timer = setTimeout(() => {
+        set({ showSpeedSettings: false, speedSettingsTimer: null });
+      }, 3000);
+      
+      set({ speedSettingsTimer: timer });
+    }
+  },
   setShowTranslation: (show) => set({ showTranslation: show }),
   toggleTranslation: () => set((state) => ({ showTranslation: !state.showTranslation })),
-  setPlaybackSpeed: (speed) => set({ playbackSpeed: speed }),
+  setPlaybackSpeed: (speed) => {
+    const state = get();
+    // Clear existing timer
+    if (state.speedSettingsTimer) {
+      clearTimeout(state.speedSettingsTimer);
+    }
+    
+    // Set the new speed
+    set({ playbackSpeed: speed });
+    
+    // If speed settings are showing, start timer to auto-hide after 3 seconds
+    if (state.showSpeedSettings) {
+      const timer = setTimeout(() => {
+        set({ showSpeedSettings: false, speedSettingsTimer: null });
+      }, 3000);
+      
+      set({ speedSettingsTimer: timer });
+    }
+  },
   setVerseRepetition: (times) => set({ verseRepetition: times }),
+  setIsSliding: (sliding) => set({ isSliding: sliding }),
 }));

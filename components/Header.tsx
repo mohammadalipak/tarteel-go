@@ -1,4 +1,5 @@
 import * as Haptics from "expo-haptics";
+import { MotiText } from "moti";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -22,6 +23,7 @@ type ChildProps = {
 
 const Header: React.FC<ChildProps> = ({ style }) => {
   const {
+    isSliding,
     sectionRepetition,
     showRepetitionSettings,
     toggleRepetitionSettings,
@@ -80,12 +82,37 @@ const Header: React.FC<ChildProps> = ({ style }) => {
         </View>
 
         <View style={styles.titleContainer}>
-          <TouchableOpacity onPress={onSurahPressed}>
-            <Text style={styles.title}>Al-Muzzammil : {displayedVerse}</Text>
+          <TouchableOpacity onPress={onSurahPressed} style={styles.surahVerse}>
+            <Text style={styles.title}>Al-Muzzammil : </Text>
+            <View style={styles.verseContainer}>
+              <MotiText
+                style={[styles.title, styles.verse]}
+                animate={{
+                  fontSize: isSliding ? 36 : 16,
+                  translateY: isSliding ? -5 : 0,
+                }}
+                transition={{
+                  type: "spring",
+                  damping: 15,
+                  stiffness: 300,
+                }}
+              >
+                {displayedVerse}
+              </MotiText>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={onRepeatPressed}>
-            <Text style={styles.subtitle}>{getRepetitionMessage()}</Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  opacity: isSliding ? 0 : 1,
+                },
+              ]}
+            >
+              {getRepetitionMessage()}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -152,13 +179,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 5,
   },
+  surahVerse: {
+    flexDirection: "row",
+  },
   title: {
     color: "#fff",
     fontSize: 16,
     fontWeight: 600,
   },
+  verse: {
+    position: "absolute",
+  },
   titleContainer: {
     marginLeft: 10,
+    alignItems: "flex-start",
+  },
+  verseContainer: {
+    position: "relative",
   },
 });
 

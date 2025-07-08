@@ -127,7 +127,7 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
   return (
     <View style={[style, styles.container]}>
       <View style={styles.left}>
-        <BounceButton onPress={onSpeedPressed}>
+        <BounceButton scale={1} onPress={onSpeedPressed}>
           <Text style={styles.speedButton}>{`${playbackSpeed}x`}</Text>
         </BounceButton>
       </View>
