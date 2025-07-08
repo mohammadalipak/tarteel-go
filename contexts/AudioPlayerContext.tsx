@@ -99,9 +99,28 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   // Update playback speed when it changes in zustand store
   useEffect(() => {
     if (player && player.setPlaybackRate && isPlaying) {
-      player.setPlaybackRate(playbackSpeed, "high");
+      try {
+        player.setPlaybackRate(playbackSpeed, "high");
+      } catch (error) {
+        console.warn("Failed to set playback rate:", error);
+      }
     }
   }, [player, playbackSpeed, isPlaying]);
+
+  // Handle audio end state
+  useEffect(() => {
+    if (status && status.didJustFinish) {
+      console.log("Audio finished, resetting to start verse");
+      const startTime = getVerseStartTime(startVerse);
+      if (startTime !== null && player && player.seekTo) {
+        try {
+          player.seekTo(startTime);
+        } catch (error) {
+          console.warn("Failed to seek after audio end:", error);
+        }
+      }
+    }
+  }, [status?.didJustFinish, player, startVerse]);
 
   return (
     <AudioPlayerContext.Provider

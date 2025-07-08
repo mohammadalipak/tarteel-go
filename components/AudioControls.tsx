@@ -16,7 +16,7 @@ import SkipBackwardIcon from "@/assets/images/skip-backward-icon.svg";
 import SkipForwardIcon from "@/assets/images/skip-forward-icon.svg";
 import { useAudioPlayerContext } from "@/contexts/AudioPlayerContext";
 import { useAppStore } from "@/store/useAppStore";
-import { findNextVerse, findPreviousVerse } from "@/utils/audioWordMapping";
+import { findNextVerse, findPreviousVerse, findCurrentWord, getVerseStartTime, getVerseEndTime } from "@/utils/audioWordMapping";
 
 type ChildProps = {
   style?: StyleProp<ViewStyle>;
@@ -24,7 +24,7 @@ type ChildProps = {
 
 const AudioControls: React.FC<ChildProps> = ({ style }) => {
   const { player, isPlaying, currentTime } = useAudioPlayerContext();
-  const { setShowRepetitionSettings, setShowSpeedSettings, playbackSpeed } =
+  const { setShowRepetitionSettings, setShowSpeedSettings, playbackSpeed, startVerse, endVerse } =
     useAppStore();
 
   const onCarModePressed = () => {
@@ -33,29 +33,79 @@ const AudioControls: React.FC<ChildProps> = ({ style }) => {
   };
 
   const onPlayPausePressed = () => {
-    if (isPlaying) {
-      player.pause();
-    } else {
-      player.play();
-      setShowRepetitionSettings(false);
+    try {
+      if (isPlaying) {
+        player.pause();
+      } else {
+        player.play();
+        setShowRepetitionSettings(false);
+      }
+    } catch (error) {
+      console.warn("Failed to toggle play/pause:", error);
     }
   };
 
   const onSkipForwardPressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    const nextVerseTime = findNextVerse(currentTime);
-    if (nextVerseTime !== null && player.seekTo) {
-      player.seekTo(nextVerseTime);
+    try {
+      const currentWord = findCurrentWord(currentTime);
+      if (currentWord && currentWord.ayah >= endVerse) {
+        // Already at or past the end verse, don't skip forward
+        console.log("Cannot skip forward: already at end verse", endVerse);
+        return;
+      }
+
+      const nextVerseTime = findNextVerse(currentTime);
+      if (nextVerseTime !== null && player.seekTo) {
+        // Check if the next verse would be beyond our end verse
+        const nextWord = findCurrentWord(nextVerseTime);
+        if (nextWord && nextWord.ayah <= endVerse) {
+          player.seekTo(nextVerseTime);
+        } else {
+          // Skip to the end verse if next would go beyond
+          const endVerseTime = getVerseStartTime(endVerse);
+          if (endVerseTime !== null) {
+            player.seekTo(endVerseTime);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to skip forward:", error);
     }
   };
 
   const onSkipBackwardPressed = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    const previousVerseTime = findPreviousVerse(currentTime);
-    if (previousVerseTime !== null && player.seekTo) {
-      player.seekTo(previousVerseTime);
+    try {
+      const currentWord = findCurrentWord(currentTime);
+      if (currentWord && currentWord.ayah < startVerse) {
+        // Already before the start verse, seek to start verse
+        console.log("Before start verse, seeking to start verse", startVerse);
+        const startVerseTime = getVerseStartTime(startVerse);
+        if (startVerseTime !== null && player.seekTo) {
+          player.seekTo(startVerseTime);
+        }
+        return;
+      }
+
+      const previousVerseTime = findPreviousVerse(currentTime);
+      if (previousVerseTime !== null && player.seekTo) {
+        // Check if the previous verse would be before our start verse
+        const previousWord = findCurrentWord(previousVerseTime);
+        if (previousWord && previousWord.ayah >= startVerse) {
+          player.seekTo(previousVerseTime);
+        } else {
+          // Skip to the start verse if previous would go before
+          const startVerseTime = getVerseStartTime(startVerse);
+          if (startVerseTime !== null) {
+            player.seekTo(startVerseTime);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to skip backward:", error);
     }
   };
 

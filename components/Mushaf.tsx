@@ -167,7 +167,7 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
     return ayahsData.flatMap((ayah) =>
       splitVerseIntoSegments(ayah.words, ayah.surah, ayah.ayah)
     );
-  }, [ayahsData, showTranslation, splitVerseIntoSegments]);
+  }, [ayahsData, splitVerseIntoSegments]);
 
   // Scroll execution function
   const executeScroll = useCallback(
@@ -227,7 +227,7 @@ const Mushaf: React.FC<ChildProps> = ({ style }) => {
         pendingScrollRef.current = null;
       } else {
         // Store the pending scroll and schedule it
-        pendingScrollRef.current = word;
+        pendingScrollRef.current = word as any;
         setTimeout(() => {
           if (
             pendingScrollRef.current &&
